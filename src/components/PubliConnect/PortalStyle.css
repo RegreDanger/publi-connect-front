@@ -1,0 +1,458 @@
+/* ========== CONTENEDOR PRINCIPAL ========== */
+.portal-root {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e8f4f8 0%, #d4e9f2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", sans-serif;
+}
+
+.portal-container {
+  display: flex;
+  max-width: 1200px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  position: relative;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s ease-out;
+}
+
+.portal-container.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ========== CARRUSEL ========== */
+.carousel-wrapper {
+  display: flex;
+  width: 100%;
+  transition: transform 0.3s ease-out;
+}
+
+/* ========== SECCIÓN DEL FORMULARIO ========== */
+.form-section {
+  flex: 0 0 100%;
+  min-width: 100%;
+  padding: 60px 50px;
+  background: white;
+}
+
+/* ========== HEADER/LOGO ========== */
+.logo-header {
+  margin-bottom: 40px;
+  opacity: 0;
+  transform: translateX(-20px);
+  animation: slideInLeft 0.8s ease-out 0.2s forwards;
+}
+
+.pc-logo {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  font-size: 36px;
+  font-weight: 600;
+  color: white;
+  letter-spacing: 1px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.portal-title {
+  font-size: 32px;
+  font-weight: 600;
+  color: #1a202c;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+
+.portal-subtitle {
+  font-size: 16px;
+  color: #718096;
+  font-weight: 400;
+  margin-bottom: 24px;
+}
+
+/* ========== BOTONES DE FASE ========== */
+.phase-buttons-wrapper {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.phase-button {
+  flex: 1;
+  min-width: 140px;
+  padding: 10px 20px;
+  border: none;
+  background: transparent;
+  color: #718096;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s;
+}
+
+.phase-button.active {
+  background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+  color: white;
+  transform: scale(1.05);
+}
+
+/* ========== FORMULARIOS ========== */
+.quick-form-wrapper,
+.complete-form-wrapper {
+  opacity: 0;
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.form-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 10px;
+  letter-spacing: -0.3px;
+}
+
+.form-subtitle {
+  font-size: 14px;
+  color: #718096;
+  margin-bottom: 25px;
+}
+
+/* ========== INPUTS Y LABELS ========== */
+.form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #4a5568;
+  margin-bottom: 6px;
+  letter-spacing: 0.2px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 15px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 0 20px 20px 0;
+  outline: none;
+  transition: all 0.3s;
+  font-family: inherit;
+  color: #2d3748;
+  background: #fafbfc;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  border-color: #4299e1;
+  background: white;
+  transform: translateX(5px);
+}
+
+/* ========== BOTONES DE SUBMIT ========== */
+.quick-submit-button {
+  width: 100%;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+  border: none;
+  border-radius: 0 20px 20px 0;
+  cursor: pointer;
+  transition: all 0.3s;
+  letter-spacing: 0.3px;
+  box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
+}
+
+.quick-submit-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(66, 153, 225, 0.4);
+}
+
+.complete-submit-button {
+  width: 100%;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  border: none;
+  border-radius: 0 20px 20px 0;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+  transition: all 0.3s;
+}
+
+.complete-submit-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(72, 187, 120, 0.4);
+}
+
+/* ========== TIP BOX ========== */
+.tip-box {
+  margin-top: 20px;
+  padding: 15px;
+  background: #f0f9ff;
+  border-left: 4px solid #4299e1;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #2d3748;
+}
+
+/* ========== INFO SIDEBAR ========== */
+.info-section {
+  flex: 0 0 100%;
+  min-width: 100%;
+  background: linear-gradient(135deg, #d4e9f2 0%, #b8dae8 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.shape {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.shape-one {
+  width: 300px;
+  height: 300px;
+  background: rgba(255, 255, 255, 0.15);
+  top: -100px;
+  right: -100px;
+  animation: float 6s ease-in-out infinite;
+}
+
+.shape-two {
+  width: 200px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.1);
+  bottom: -50px;
+  left: -50px;
+  animation: float 8s ease-in-out infinite reverse;
+}
+
+.info-content {
+  text-align: center;
+  z-index: 1;
+  max-width: 400px;
+  opacity: 0;
+  transform: scale(0.9);
+  animation: scaleIn 0.8s ease-out 0.4s forwards;
+}
+
+.emoji-icon {
+  font-size: 72px;
+  margin-bottom: 24px;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+.info-title {
+  font-size: 36px;
+  font-weight: 700;
+  color: #1a202c;
+  margin-bottom: 16px;
+  letter-spacing: -0.8px;
+}
+
+.info-description {
+  font-size: 18px;
+  color: #4a5568;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+.feature-box {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  border-radius: 16px;
+  margin-top: 30px;
+}
+
+.feature-box h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 15px;
+}
+
+.feature-list {
+  text-align: left;
+  font-size: 14px;
+  color: #4a5568;
+}
+
+.feature-list div {
+  margin-bottom: 10px;
+}
+
+.feature-list div:last-child {
+  margin-bottom: 0;
+}
+
+.back-to-form-button {
+  display: none;
+}
+
+/* ========== INDICADORES DE CARRUSEL ========== */
+.carousel-indicators {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  gap: 8px;
+  z-index: 10;
+}
+
+.indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background: #cbd5e0;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.indicator.active {
+  width: 24px;
+  background: #4299e1;
+}
+
+/* ========== ANIMACIONES ========== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+.phase-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #e2e8f0 !important;
+  color: #a0aec0 !important;
+  transform: scale(1) !important;
+}
+
+.phase-button:disabled:hover {
+  transform: scale(1) !important;
+}
+/* ========== RESPONSIVE MOBILE ========== */
+@media (max-width: 968px) {
+  .portal-container {
+    max-height: 90vh !important;
+  }
+  
+  .form-section {
+    padding: 40px 30px !important;
+    overflow-y: auto !important;
+    max-height: 90vh !important;
+  }
+  
+  .carousel-indicators {
+    display: flex !important;
+  }
+  
+  .back-to-form-button {
+    display: block !important;
+  }
+}
+
+@media (min-width: 969px) {
+  .carousel-wrapper {
+    flex-wrap: nowrap !important;
+  }
+  
+  .form-section {
+    flex: 1 !important;
+    min-width: auto !important;
+  }
+  
+  .info-section {
+    flex: 0.8 !important;
+    min-width: auto !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-section {
+    padding: 30px 20px !important;
+  }
+  
+  .portal-title {
+    font-size: 28px !important;
+  }
+}
