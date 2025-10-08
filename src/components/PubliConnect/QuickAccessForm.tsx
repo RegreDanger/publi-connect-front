@@ -23,7 +23,8 @@ export default function QuickAccessForm({ data, handleChange, handleSubmit }: Qu
 
       <div style={{ marginBottom: '28px' }}>
         <label className="form-label">CORREO ELECTRÓNICO</label>
-        <input type="email" name="correo" value={data.correo} onChange={handleChange} required className="form-input" placeholder="tu@email.com" />
+        <input type="email" name="correo" value={data.correo} onChange={handleChange} required className="form-input" placeholder="tu@email.com" translate="no" />
+        
       </div>
 
       <button onClick={handleSubmit} className="quick-submit-button">

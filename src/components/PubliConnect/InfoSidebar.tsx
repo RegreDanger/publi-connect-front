@@ -17,7 +17,9 @@ export default function InfoSidebar({ setCurrentSlide }: InfoSidebarProps) {
       
       <div className="info-content">
         <div className="emoji-icon">📡</div> {/* Puedes poner el icono que quieras */}
-        <h2 className="info-title">Bienvenido a Publi-Connect</h2>
+        <h2 className="info-title">
+          Bienvenido a <span translate="no">Publi-Connect</span>
+        </h2>
         <p className="info-description">
           Conéctate en segundos y navega gratis por 5 minutos
         </p>

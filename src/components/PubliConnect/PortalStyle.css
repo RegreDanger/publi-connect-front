@@ -399,7 +399,17 @@
     transform: translateY(-20px);
   }
 }
+.phase-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #e2e8f0 !important;
+  color: #a0aec0 !important;
+  transform: scale(1) !important;
+}
 
+.phase-button:disabled:hover {
+  transform: scale(1) !important;
+}
 /* ========== RESPONSIVE MOBILE ========== */
 @media (max-width: 968px) {
   .portal-container {

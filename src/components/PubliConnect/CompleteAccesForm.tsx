@@ -49,6 +49,7 @@ export default function CompleteAccessForm({
           onChange={handleQuickChange} // Uses quick change handler
           placeholder="Juan Pérez"
           className="form-input"
+          translate="no"
         />
       </div>
 
@@ -62,6 +63,7 @@ export default function CompleteAccessForm({
           onChange={handleQuickChange} // Uses quick change handler
           placeholder="tu@email.com"
           className="form-input"
+          translate="no"
         />
       </div>
 

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 
-// Tipos de datos para TypeScript (necesarios para evitar errores)
 export type RegistrationPhase = 'quick' | 'complete';
 
 export type QuickData = { 
@@ -18,17 +17,68 @@ export type CompleteData = {
 import QuickAccessForm from './QuickAccessForm';
 import CompleteAccessForm from './CompleteAccesForm';
 import InfoSidebar from './InfoSidebar';
-import './PortalStyle.css'; // Estilos comunes
+import './PortalStyle.css';
 
+// ========== VALIDACIÓN ROBUSTA DE EMAIL ==========
+const validateEmailFormat = (email: string): { valid: boolean; message: string } => {
+  email = email.trim();
+
+  if (!email) return { valid: false, message: 'El correo no puede estar vacío' };
+  if (!email.includes('@')) return { valid: false, message: 'El correo debe contener @' };
+
+  // Solo un @
+  if (email.split('@').length !== 2) return { valid: false, message: 'El correo solo puede tener un @' };
+
+  // Regex básico
+  const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  if (!regex.test(email)) return { valid: false, message: 'Formato de correo inválido' };
+
+  // Dominios permitidos
+  const allowedDomains = [
+    'gmail', 'hotmail', 'outlook', 'yahoo', 'icloud', 'protonmail', 'live', 'msn', 'aol', 'mail'
+  ];
+  // Extensiones permitidas
+  const allowedTLDs = ['com', 'mx', 'es'];
+
+  const [, domain] = email.split('@');
+  if (!domain) return { valid: false, message: 'Dominio inválido' };
+
+  const domainParts = domain.split('.');
+  if (domainParts.length < 2) return { valid: false, message: 'Dominio incompleto' };
+
+  const service = domainParts[0].toLowerCase();
+  const tld = domainParts[domainParts.length - 1].toLowerCase();
+
+  if (!allowedDomains.includes(service)) {
+    return { valid: false, message: `Solo se permiten correos de: ${allowedDomains.join(', ')}` };
+  }
+
+  if (!allowedTLDs.includes(tld)) {
+    return { valid: false, message: `Solo se permiten dominios .com, .mx o .es` };
+  }
+
+  // No espacios
+  if (/\s/.test(email)) return { valid: false, message: 'El correo no puede contener espacios' };
+
+  // Dominio no debe empezar o terminar con punto o guión
+  for (const part of domainParts) {
+    if (part.startsWith('-') || part.endsWith('-') || part.length === 0) {
+      return { valid: false, message: 'Dominio del correo inválido' };
+    }
+  }
+
+  return { valid: true, message: 'Email válido' };
+};
+// ========== COMPONENTE PRINCIPAL ==========
 export default function PubliConnectPortal() {
   const [phase, setPhase] = useState<RegistrationPhase>('quick');
   const [isVisible, setIsVisible] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
+  
+  const [quickAccessCompleted, setQuickAccessCompleted] = useState(false);
 
-
-  // Estados de datos tipados
   const [quickData, setQuickData] = useState<QuickData>({ nombre: '', correo: '' });
   const [completeData, setCompleteData] = useState<CompleteData>({
     numero: '',
@@ -41,10 +91,8 @@ export default function PubliConnectPortal() {
     setIsVisible(true);
   }, []);
 
-  // --- Handlers de Lógica y Estado ---
-
+  // ========== HANDLERS ==========
   const handleQuickChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("valor cambiado:", e.target.value);
     const { name, value } = e.target;
     setQuickData(prev => ({ ...prev, [name]: value }));
   };
@@ -56,17 +104,65 @@ export default function PubliConnectPortal() {
 
   const handleQuickSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validar campos vacíos
+    if (!quickData.nombre.trim()) {
+      alert('❌ Por favor ingresa tu nombre');
+      return;
+    }
+    
+    if (!quickData.correo.trim()) {
+      alert('❌ Por favor ingresa tu correo electrónico');
+      return;
+    }
+    
+    // Validar formato de email con función robusta
+    const emailValidation = validateEmailFormat(quickData.correo);
+    if (!emailValidation.valid) {
+      alert(`❌ ${emailValidation.message}\n\nEjemplo válido: usuario@gmail.com`);
+      return;
+    }
+    
+    // Si todo es válido
     console.log('Acceso rápido:', quickData);
-    alert('¡Conectado! Tienes 5 minutos de WiFi gratis ');
-    // Aquí iría la integración con tu backend de publi-connect
+    setQuickAccessCompleted(true);
+    alert('✅ ¡Conectado! Tienes 5 minutos de WiFi gratis 🎉\n\n¿Quieres WiFi ilimitado? Completa tu perfil ahora.');
+    setPhase('complete');
+    
+    // Aquí iría la integración con tu backend
+    // fetch('http://tu-backend/api/quick-access', { ... })
   };
 
   const handleCompleteSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validaciones adicionales para el formulario completo
+    if (!completeData.numero.trim()) {
+      alert('❌ Por favor ingresa tu número de teléfono');
+      return;
+    }
+    
+    if (!completeData.edad.trim() || parseInt(completeData.edad) < 1) {
+      alert('❌ Por favor ingresa una edad válida');
+      return;
+    }
+    
+    if (!completeData.genero) {
+      alert('❌ Por favor selecciona tu género');
+      return;
+    }
+    
+    if (!completeData.codigoPostal.trim() || completeData.codigoPostal.length !== 5) {
+      alert('❌ Por favor ingresa un código postal válido de 5 dígitos');
+      return;
+    }
+    
     const fullData = { ...quickData, ...completeData };
     console.log('Registro completo:', fullData);
-    alert('¡Registro completo! Disfruta WiFi ilimitado ');
+    alert('✅ ¡Registro completo! Disfruta WiFi ilimitado 🚀');
+    
     // Aquí iría la integración con tu backend
+    // fetch('http://tu-backend/api/complete-registration', { ... })
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -95,7 +191,7 @@ export default function PubliConnectPortal() {
     setTouchEnd(0);
   };
 
-  // --- Renderizado Condicional de Formularios ---
+  // ========== RENDER FUNCTIONS ==========
   const renderForm = () => {
     if (phase === 'quick') {
       return (
@@ -123,27 +219,30 @@ export default function PubliConnectPortal() {
       <button
         onClick={() => setPhase('quick')}
         className={`phase-button ${phase === 'quick' ? 'active' : ''}`}
+        disabled={!quickAccessCompleted && phase === 'complete'}
       >
-        Acceso Rápido (5 min)
+        🚀 Acceso Rápido (5 min)
       </button>
       <button
         onClick={() => setPhase('complete')}
         className={`phase-button ${phase === 'complete' ? 'active' : ''}`}
+        disabled={!quickAccessCompleted}
+        title={!quickAccessCompleted ? 'Primero completa el acceso rápido' : ''}
       >
-        Acceso Completo
+        {quickAccessCompleted ? '⭐ Acceso Completo' : '🔒 Acceso Completo (bloqueado)'}
       </button>
     </div>
   );
 
   const renderHeader = () => (
     <div className="logo-header">
-      <div className="pc-logo">PC</div>
-      <h1 className="portal-title">Publi-Connect</h1>
+      <div className="pc-logo" translate="no">PC</div>
+      <h1 className="portal-title" translate="no">Publi-Connect</h1>
       <p className="portal-subtitle">Conéctate a nuestra red WiFi gratuita</p>
     </div>
   );
 
-  // --- Estructura Principal del Componente ---
+  // ========== RENDER PRINCIPAL ==========
   return (
     <div className="portal-root">
       <div className={`portal-container ${isVisible ? 'visible' : ''}`}>
@@ -154,24 +253,17 @@ export default function PubliConnectPortal() {
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
-          {/* Sección de Formulario (Izquierda) */}
           <div className="form-section">
             {renderHeader()}
-            
-            {/* Botones de fase (Quick/Complete) */}
             {renderPhaseButtons()}
-
-            {/* El formulario que se renderiza */}
             {renderForm()}
           </div>
 
-          {/* Sección de Información (Derecha) */}
           <InfoSidebar 
             setCurrentSlide={setCurrentSlide}
           />
         </div>
         
-        {/* Indicadores de Carrusel para móvil */}
         <div className="carousel-indicators">
           <div 
             onClick={() => setCurrentSlide(0)}
