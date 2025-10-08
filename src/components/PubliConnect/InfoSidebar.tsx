@@ -27,10 +27,10 @@ export default function InfoSidebar({ setCurrentSlide }: InfoSidebarProps) {
         <div className="feature-box">
           <h3>¿Por qué registrarte?</h3>
           <div className="feature-list">
-            <div>✅ WiFi rápido y seguro</div>
-            <div>✅ Sin límite de dispositivos</div>
-            <div>✅ Conexión estable</div>
-            <div>✅ Soporte 24/7</div>
+            <div>WiFi rápido y seguro</div>
+            <div>Sin límite de dispositivos</div>
+            <div>Conexión estable</div>
+            <div>Soporte 24/7</div>
           </div>
         </div>
         

@@ -35,7 +35,7 @@ const validateEmailFormat = (email: string): { valid: boolean; message: string }
 
   // Dominios permitidos
   const allowedDomains = [
-    'gmail', 'hotmail', 'outlook', 'yahoo', 'icloud', 'protonmail', 'live', 'msn', 'aol', 'mail'
+    'gmail', 'hotmail', 'outlook', 'yahoo', 'icloud', 'protonmail', 'live', 'msn', 'aol', 'mail',<q></q>
   ];
   // Extensiones permitidas
   const allowedTLDs = ['com', 'mx', 'es'];
@@ -126,7 +126,7 @@ export default function PubliConnectPortal() {
     // Si todo es válido
     console.log('Acceso rápido:', quickData);
     setQuickAccessCompleted(true);
-    alert('✅ ¡Conectado! Tienes 5 minutos de WiFi gratis 🎉\n\n¿Quieres WiFi ilimitado? Completa tu perfil ahora.');
+    alert(' ¡Conectado! Tienes 5 minutos de WiFi gratis \n\n¿Quieres WiFi ilimitado? Completa tu perfil ahora.');
     setPhase('complete');
     
     // Aquí iría la integración con tu backend
@@ -138,28 +138,28 @@ export default function PubliConnectPortal() {
     
     // Validaciones adicionales para el formulario completo
     if (!completeData.numero.trim()) {
-      alert('❌ Por favor ingresa tu número de teléfono');
+      alert(' Por favor ingresa tu número de teléfono');
       return;
     }
     
     if (!completeData.edad.trim() || parseInt(completeData.edad) < 1) {
-      alert('❌ Por favor ingresa una edad válida');
+      alert(' Por favor ingresa una edad válida');
       return;
     }
     
     if (!completeData.genero) {
-      alert('❌ Por favor selecciona tu género');
+      alert('❌Por favor selecciona tu género');
       return;
     }
     
     if (!completeData.codigoPostal.trim() || completeData.codigoPostal.length !== 5) {
-      alert('❌ Por favor ingresa un código postal válido de 5 dígitos');
+      alert('❌Por favor ingresa un código postal válido de 5 dígitos');
       return;
     }
     
     const fullData = { ...quickData, ...completeData };
     console.log('Registro completo:', fullData);
-    alert('✅ ¡Registro completo! Disfruta WiFi ilimitado 🚀');
+    alert('¡Registro completo! Disfruta WiFi ilimitado 🚀');
     
     // Aquí iría la integración con tu backend
     // fetch('http://tu-backend/api/complete-registration', { ... })
