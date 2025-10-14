@@ -1,13 +1,14 @@
-import type { Dispatch, SetStateAction } from 'react';
+/*
 
+Just in case for future use
 
 interface InfoSidebarProps {
   setCurrentSlide: Dispatch<SetStateAction<number>>;
   // Nota: es para algun prop que  tengamos 
-}
+}*/
 
 // 2. Define el componente y desestructura las props
-export default function InfoSidebar({ setCurrentSlide }: InfoSidebarProps) {
+export default function InfoSidebar() {
   return (
     <div className="info-section">
       {/* Las burbujas de fondo usan clases CSS */}

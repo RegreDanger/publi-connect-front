@@ -308,8 +308,7 @@ export default function PubliConnectPortal() {
             {renderForm()}
           </div>
 
-          <InfoSidebar 
-            setCurrentSlide={setCurrentSlide}
+          <InfoSidebar
           />
         </div>
         
