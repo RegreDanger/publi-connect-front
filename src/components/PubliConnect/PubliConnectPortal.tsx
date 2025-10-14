@@ -12,6 +12,9 @@ export type CompleteData = {
   edad: string;
   genero: string;
   codigoPostal: string;
+  authProvider: string;
+  macAddress: string;
+  ssid: string;
 };
 
 import QuickAccessForm from './QuickAccessForm';
@@ -19,7 +22,7 @@ import CompleteAccessForm from './CompleteAccesForm';
 import InfoSidebar from './InfoSidebar';
 import './PortalStyle.css';
 
-// ========== VALIDACIÓN ROBUSTA DE EMAIL ==========
+// VALIDACIÓN ROBUSTA DE EMAIL 
 const validateEmailFormat = (email: string): { valid: boolean; message: string } => {
   email = email.trim();
 
@@ -69,7 +72,10 @@ const validateEmailFormat = (email: string): { valid: boolean; message: string }
 
   return { valid: true, message: 'Email válido' };
 };
-// ========== COMPONENTE PRINCIPAL ==========
+
+//  COMPONENTE PRINCIPAL
+
+
 export default function PubliConnectPortal() {
   const [phase, setPhase] = useState<RegistrationPhase>('quick');
   const [isVisible, setIsVisible] = useState(false);
@@ -84,11 +90,42 @@ export default function PubliConnectPortal() {
     numero: '',
     edad: '',
     genero: '',
-    codigoPostal: ''
+    codigoPostal: '',
+    authProvider: 'email',
+    macAddress: '',
+    ssid: ''
   });
 
   useEffect(() => {
     setIsVisible(true);
+  }, []);
+
+  // Obtener información de red automáticamente
+  useEffect(() => {
+    const getNetworkInfo = async () => {
+      try {
+        // En producción, estos valores vendrán del router/backend
+        const macAddress = 'auto-detected';
+        const ssid = 'Publi-Connect';
+        
+        setCompleteData(prev => ({
+          ...prev,
+          authProvider: 'email',
+          macAddress: macAddress,
+          ssid: ssid
+        }));
+      } catch (error) {
+        console.error('Error obteniendo info de red:', error);
+        setCompleteData(prev => ({
+          ...prev,
+          authProvider: 'email',
+          macAddress: 'unknown',
+          ssid: 'Publi-Connect'
+        }));
+      }
+    };
+    
+    getNetworkInfo();
   }, []);
 
   // ========== HANDLERS ==========
@@ -107,19 +144,19 @@ export default function PubliConnectPortal() {
     
     // Validar campos vacíos
     if (!quickData.nombre.trim()) {
-      alert('❌ Por favor ingresa tu nombre');
+      alert('⚠ Por favor ingresa tu nombre');
       return;
     }
     
     if (!quickData.correo.trim()) {
-      alert('❌ Por favor ingresa tu correo electrónico');
+      alert('⚠ Por favor ingresa tu correo electrónico');
       return;
     }
     
     // Validar formato de email con función robusta
     const emailValidation = validateEmailFormat(quickData.correo);
     if (!emailValidation.valid) {
-      alert(`❌ ${emailValidation.message}\n\nEjemplo válido: usuario@gmail.com`);
+      alert(`⚠ ${emailValidation.message}\n\nEjemplo válido: usuario@gmail.com`);
       return;
     }
     
@@ -138,31 +175,43 @@ export default function PubliConnectPortal() {
     
     // Validaciones adicionales para el formulario completo
     if (!completeData.numero.trim()) {
-      alert('❌ Por favor ingresa tu número de teléfono');
+      alert('⚠ Por favor ingresa tu número de teléfono');
       return;
     }
     
     if (!completeData.edad.trim() || parseInt(completeData.edad) < 1) {
-      alert('❌ Por favor ingresa una edad válida');
+      alert('⚠ Por favor ingresa una edad válida');
       return;
     }
     
     if (!completeData.genero) {
-      alert('❌ Por favor selecciona tu género');
+      alert('⚠ Por favor selecciona tu género');
       return;
     }
     
     if (!completeData.codigoPostal.trim() || completeData.codigoPostal.length !== 5) {
-      alert('❌ Por favor ingresa un código postal válido de 5 dígitos');
+      alert('⚠ Por favor ingresa un código postal válido de 5 dígitos');
       return;
     }
     
-    const fullData = { ...quickData, ...completeData };
-    console.log('Registro completo:', fullData);
+    // segun te deje los datos listp para que solo los conectes
+    const backendData = {
+      name: quickData.nombre,
+      age: parseInt(completeData.edad),
+      gender: completeData.genero,
+      email: quickData.correo,
+      phoneNo: completeData.numero,
+      zipCode: completeData.codigoPostal,
+      authProvider: completeData.authProvider,
+      macAddress: completeData.macAddress,
+      ssid: completeData.ssid
+    };
+    
+    console.log('Datos para backend:', backendData);
     alert('✅ ¡Registro completo! Disfruta WiFi ilimitado 🚀');
     
-    // Aquí iría la integración con tu backend
-    // fetch('http://tu-backend/api/complete-registration', { ... })
+    // Aquí puede ir el backend carlos , bueno yo creo , tu 
+    //lo checas 
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {

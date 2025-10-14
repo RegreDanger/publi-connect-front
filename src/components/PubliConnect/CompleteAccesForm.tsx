@@ -1,15 +1,16 @@
 import React from 'react';
 
-// Define the shape of the data that this form works with
 type QuickData = { nombre: string; correo: string };
 type CompleteData = {
   numero: string;
   edad: string;
   genero: string;
   codigoPostal: string;
+  authProvider: string;
+  macAddress: string;
+  ssid: string;
 };
 
-// Define the required props for the component
 interface CompleteAccessFormProps {
   quickData: QuickData;
   completeData: CompleteData;
@@ -28,16 +29,11 @@ export default function CompleteAccessForm({
   return (
     <div className="complete-form-wrapper">
       <h2 className="form-title">
-        Acceso WiFi Ilimitado
+        Acceso a WiFi
       </h2>
       <p className="form-subtitle">
-        Completa tu perfil y disfruta internet todo el día
+        Completa tu perfil y disfruta de tu internet de forma mas sencilla.
       </p>
-      
-      {/*
-        NOTE: The inputs below use common CSS classes 
-        like 'form-label' and 'form-input' defined in PortalStyles.css
-      */}
       
       {/* Nombre (from QuickData) */}
       <div style={{ marginBottom: '12px' }}>
@@ -46,7 +42,7 @@ export default function CompleteAccessForm({
           type="text"
           name="nombre"
           value={quickData.nombre}
-          onChange={handleQuickChange} // Uses quick change handler
+          onChange={handleQuickChange}
           placeholder="Juan Pérez"
           className="form-input"
           translate="no"
@@ -60,7 +56,7 @@ export default function CompleteAccessForm({
           type="email"
           name="correo"
           value={quickData.correo}
-          onChange={handleQuickChange} // Uses quick change handler
+          onChange={handleQuickChange}
           placeholder="tu@email.com"
           className="form-input"
           translate="no"
@@ -75,7 +71,6 @@ export default function CompleteAccessForm({
           name="numero"
           value={completeData.numero}
           onChange={handleCompleteChange}
-          placeholder="9931234567"
           className="form-input"
         />
       </div>
@@ -89,8 +84,7 @@ export default function CompleteAccessForm({
           value={completeData.edad}
           onChange={handleCompleteChange}
           min="1"
-          max="120"
-          placeholder="25"
+          max="100"
           className="form-input"
         />
       </div>
@@ -102,7 +96,7 @@ export default function CompleteAccessForm({
           name="genero"
           value={completeData.genero}
           onChange={handleCompleteChange}
-          className="form-input select-field" // Added select-field for specific select styling if needed
+          className="form-input select-field"
         >
           <option value="">Seleccionar...</option>
           <option value="masculino">Masculino</option>
@@ -120,10 +114,28 @@ export default function CompleteAccessForm({
           value={completeData.codigoPostal}
           onChange={handleCompleteChange}
           maxLength={5}
-          placeholder="86000"
           className="form-input"
         />
       </div>
+
+      {/* CAMPOS OCULTOS PARA EL BACKEND */}
+      <input
+        type="hidden"
+        name="authProvider"
+        value={completeData.authProvider}
+      />
+      
+      <input
+        type="hidden"
+        name="macAddress"
+        value={completeData.macAddress}
+      />
+      
+      <input
+        type="hidden"
+        name="ssid"
+        value={completeData.ssid}
+      />
 
       <button
         onClick={handleSubmit}

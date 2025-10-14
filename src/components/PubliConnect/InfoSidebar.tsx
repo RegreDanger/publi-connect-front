@@ -1,10 +1,9 @@
 import type { Dispatch, SetStateAction } from 'react';
 
-// 1. Define la interfaz (los tipos de las props que va a recibir)
+
 interface InfoSidebarProps {
   setCurrentSlide: Dispatch<SetStateAction<number>>;
-  // Nota: Si no usas estas props dentro de InfoSidebar, puedes quitarlas
-  // de la interfaz, pero el error desaparecerá al definirlas.
+  // Nota: es para algun prop que  tengamos 
 }
 
 // 2. Define el componente y desestructura las props
@@ -16,7 +15,7 @@ export default function InfoSidebar({ setCurrentSlide }: InfoSidebarProps) {
       <div className="shape shape-two" /> 
       
       <div className="info-content">
-        <div className="emoji-icon">📡</div> {/* Puedes poner el icono que quieras */}
+        <div className="emoji-icon">📡</div> {/* icono que deseemos */}
         <h2 className="info-title">
           Bienvenido a <span translate="no">Publi-Connect</span>
         </h2>
@@ -27,32 +26,13 @@ export default function InfoSidebar({ setCurrentSlide }: InfoSidebarProps) {
         <div className="feature-box">
           <h3>¿Por qué registrarte?</h3>
           <div className="feature-list">
-            <div>✅ WiFi rápido y seguro</div>
-            <div>✅ Sin límite de dispositivos</div>
-            <div>✅ Conexión estable</div>
-            <div>✅ Soporte 24/7</div>
+            <div> WiFi rápido y seguro</div>
+            <div>Sin límite de dispositivos</div>
+            <div>Conexión estable</div>
+            <div>Soporte 24/7</div>
           </div>
         </div>
-        
-        {/* Opcional: Agregar un botón para volver al formulario en móvil */}
-        <button 
-            className="back-to-form-button"
-            onClick={() => setCurrentSlide(0)}
-            style={{ 
-                marginTop: '20px', 
-                padding: '10px 20px', 
-                background: '#4299e1', 
-                color: 'white', 
-                border: 'none', 
-                borderRadius: '8px',
-                fontWeight: '600',
-                cursor: 'pointer'
-            }}
-        >
-            Volver al Formulario
-        </button>
-        
-      </div>
+        </div>
     </div>
   );
 }
