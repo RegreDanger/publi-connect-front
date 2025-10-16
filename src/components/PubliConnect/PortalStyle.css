@@ -1,16 +1,84 @@
+
+/* SF Pro Display Light - Para títulos */
+@font-face {
+  font-family: 'SF Pro Display';
+  src: url('https://cdn.jsdelivr.net/gh/sahibjotsaggu/San-Francisco-Pro-Fonts@master/SF-Pro-Display-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* SF Pro Text Light - Para textos de cuerpo */
+@font-face {
+  font-family: 'SF Pro Text';
+  src: url('https://cdn.jsdelivr.net/gh/sahibjotsaggu/San-Francisco-Pro-Fonts@master/SF-Pro-Text-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Aplicar globalmente */
+* {
+  font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 300;
+}
+
+/* Títulos con SF Pro Display */
+h1, h2, h3, h4, h5, h6,
+.portal-title,
+.info-title,
+.form-title {
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 300;
+}
+
+/* Body y textos generales con SF Pro Text */
+body,
+p,
+span,
+.portal-subtitle,
+.form-subtitle,
+.form-label,
+.form-input {
+  font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 300;
+  position: relative;
+  overflow-x: hidden;
+}
+/* Efecto sutil en el fondo */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.02) 0%, transparent 50%);
+  animation: float 20s ease-in-out infinite;
+  z-index: 0;
+  pointer-events: none;
+}
+
 /* ========== CONTENEDOR PRINCIPAL ========== */
 .portal-container {
   display: flex;
   max-width: 1200px;
   width: 100%;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 24px;
+  background: #e2ebf7;
+  backdrop-filter: blur(20px);
+  /*dce7f4*/
+  border-radius: 30px;
   overflow: hidden;
   position: relative;
   opacity: 0;
   transform: translateY(20px);
   transition: all 0.6s ease-out;
-  min-height: 900px; /* ✅ Altura mínima */
+  min-height: 900px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.1);
+  z-index: 1;
 }
 
 .portal-container.visible {
@@ -22,21 +90,39 @@
 .carousel-wrapper {
   display: flex;
   width: 100%;
-  transition: transform 0.3s ease-out;
-  align-items: stretch; /* Añadir esta línea para estirar los hijos */
+  transition: transform 0.7s ease-out;
+  align-items: stretch;
 }
 
 /* ========== SECCIÓN DEL FORMULARIO ========== */
 .form-section {
-  flex: 100% 100% 100%;
+  flex: 0 0 100%;
   min-width: 100%;
-  padding: 50px 60px;
-  background: linear-gradient(135deg, #d4e9f2 0%, #b8dae8 100%);
+  padding: 50px 50px;
+  background: #dde8f5;
   min-height: 100%;
+  position: relative;
+  overflow: hidden;
 }
+
+/* Patrón decorativo de fondo - Muy sutil */
+.form-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.02) 0%, transparent 50%),
+    radial-gradient(circle at 90% 80%, rgba(147, 197, 253, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+
 .shape {
   position: absolute;
-  border-radius: 100%;
+  border-radius: 1000%;
+  opacity: 0.1;
 }
 
 /* ========== HEADER/LOGO ========== */
@@ -45,12 +131,14 @@
   opacity: 0;
   transform: translateX(-20px);
   animation: slideInLeft 0.8s ease-out 0.2s forwards;
+  position: relative;
+  z-index: 1;
 }
 
 .pc-logo {
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
   border-radius: 16px;
   display: flex;
   align-items: center;
@@ -61,19 +149,23 @@
   color: white;
   letter-spacing: 1px;
   animation: pulse 2s ease-in-out infinite;
+  box-shadow: 
+    0 10px 30px rgba(59, 130, 246, 0.4),
+    0 0 50px rgba(96, 165, 250, 0.3);
 }
 
 .portal-title {
   font-size: 40px;
   font-weight: 1000;
-  color: #3f77e9fb;
+  color: #2c5282;
   margin-bottom: 18px;
   letter-spacing: -0.4px;
+  text-shadow: none;
 }
 
 .portal-subtitle {
   font-size: 16px;
-  color: #327cec;
+  color: #0e305a;
   font-weight: 400;
   margin-bottom: 24px;
 }
@@ -82,30 +174,45 @@
 .phase-buttons-wrapper {
   display: flex;
   gap: 20px;
-  margin-bottom: 20x;
-  border-bottom: 2px solid #e2e8f0;
+  margin-bottom: 30px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
   padding-bottom: 10px;
   flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
 }
 
 .phase-button {
   flex: 1;
   min-width: 140px;
-  padding: 10px 10px;
+  padding: 12px 20px;
   border: none;
-  background: transparent;
-  color: #6199ec;
-  border-radius: 8px;
+  border-left: 4px solid #03172f; 
+  background: rgba(255, 255, 255, 0.963);
+  color: #02244d;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
   cursor: pointer;
   font-weight: 600;
   font-size: 14px;
   transition: all 0.3s;
+  backdrop-filter: blur(10px);
+  outline: none;
+}
+
+.phase-button:hover,
+.phase-button:focus {
+  box-shadow: 0 0 12px #0173f4; 
+  border-radius: 12px 20px 12px 12px; /* Circular border on the right */
 }
 
 .phase-button.active {
-  background: linear-gradient(135deg, #bcd0e1 0%, #1483ea 100%);
-  color: rgb(13, 51, 101);
+  background: rgb(245, 245, 245);
+  border-left: 4px solid #03172f;
+  color: #02063e;
+  border-color: transparent;
   transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
 }
 
 /* ========== FORMULARIOS ========== */
@@ -113,19 +220,21 @@
 .complete-form-wrapper {
   opacity: 0;
   animation: fadeInUp 0.5s ease-out forwards;
+  position: relative;
+  z-index: 1;
 }
 
 .form-title {
   font-size: 20px;
   font-weight: 600;
-  color: #071224;
+  color: #0d1636;
   margin-bottom: 10px;
   letter-spacing: -0.3px;
 }
 
 .form-subtitle {
   font-size: 14px;
-  color: #718096;
+  color: #0850a1;
   margin-bottom: 25px;
 }
 
@@ -134,38 +243,39 @@
   display: block;
   font-size: 13px;
   font-weight: 500;
-  color: #6996e3;
+  color: #011227;
   margin-bottom: 6px;
   letter-spacing: 0.2px;
 }
 
 .form-input {
   width: 100%;
-  padding: 14px 12px;
+  padding: 14px 18px;
   font-size: 15px;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 0 20px 20px 0;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
   outline: none;
   transition: all 0.3s;
   font-family: inherit;
-  color: #2d3748;
-  background: #fafbfc;
-  box-sizing:border-box;
+  color: #02063e;
+  background: rgba(255, 255, 255, 0.95);
+  box-sizing: border-box;
+  backdrop-filter: blur(10px);
+}
+
+.form-input::placeholder {
+  color: #94a3b8;
 }
 
 .form-input:focus,
 .form-input:hover {
-  border-top-left-radius: #070ee3;
   background: white;
-  transform: translateX(4px);
-  border-left: 8px solid #0e7fdd; /* ← Borde derecho más grueso */
-  box-shadow: 0px 0 20px rgba(66, 153, 225, 0.6); /* ← Efecto neón azul a la derecha */
-}
-
-/* Efecto neón más intenso al hacer focus */
-.form-input:focus {
-  border-right: 10px solid #6309c8;
-  box-shadow: 6px 0 20px rgba(5, 128, 243, 0.8); /* ← Neón más fuerte */
+  border-color: #60a5fa;
+  box-shadow: 
+    0 0 0 4px rgba(96, 165, 250, 0.1),
+    0 8px 20px rgba(59, 130, 246, 0.3);
+  transform: translateY(-2px);
 }
 
 /* ========== BOTONES DE SUBMIT ========== */
@@ -175,17 +285,19 @@
   font-size: 16px;
   font-weight: 600;
   color: white;
-  background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
   border: none;
-  border-radius: 0 20px 20px 0;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s;
   letter-spacing: 0.3px;
- 
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+  margin-top: 20px;
 }
 
 .quick-submit-button:hover {
   transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(59, 130, 246, 0.5);
 }
 
 .complete-submit-button {
@@ -194,36 +306,39 @@
   font-size: 16px;
   font-weight: 600;
   color: white;
-  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   border: none;
-  border-radius: 0 20px 20px 0;
+  border-radius: 12px;
   cursor: pointer;
   letter-spacing: 0.3px;
-  box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
   transition: all 0.3s;
+  margin-top: 20px;
 }
 
 .complete-submit-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(72, 187, 120, 0.4);
+  box-shadow: 0 12px 30px rgba(24, 39, 202, 0.5);
 }
 
 /* ========== TIP BOX ========== */
 .tip-box {
   margin-top: 20px;
   padding: 15px;
-  background: #f0f9ff;
-  border-left: 4px solid #4299e1;
+  background: rgba(245, 245, 245, 0);
+  border-left: 6px solid #60a5fa;
   border-radius: 8px;
   font-size: 13px;
-  color: #2d3748;
+  color: #0b0830;
+  backdrop-filter: blur(10px);
 }
 
 /* ========== INFO SIDEBAR ========== */
 .info-section {
   flex: 0 0 100%;
   min-width: 100%;
-  background: linear-gradient(135deg, #d4e9f2 0%, #b8dae8 100%);
+  background: #e2ebf7; /* Added */
+  backdrop-filter: blur(20px); /* Added */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -234,21 +349,14 @@
   min-height: 100%;
 }
 
-.shape {
-  position: absolute;
-  border-radius: 50%;
-}
-
 .shape-one {
   width: 300px;
   height: 300px;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgb(255, 255, 255);
   top: -100px;
   right: -100px;
   animation: float 6s ease-in-out infinite;
 }
-
-
 
 .info-content {
   text-align: center;
@@ -263,45 +371,59 @@
   font-size: 72px;
   margin-bottom: 24px;
   animation: bounce 2s ease-in-out infinite;
+  filter: drop-shadow(0 4px 10px rgb(134, 152, 227));
 }
 
 .info-title {
   font-size: 36px;
   font-weight: 700;
-  color: #1a202c;
+  color: #ffffff;
   margin-bottom: 16px;
   letter-spacing: -0.8px;
+  text-shadow: 0 2px 20px rgb(123, 146, 197);
 }
 
 .info-description {
   font-size: 18px;
-  color: #4a5568;
+  color: #0f1c69;
   line-height: 1.6;
   margin-bottom: 30px;
 }
 
 .feature-box {
-  background: rgba(255, 255, 255, 0.9);
-  padding: 10px;
-  border-radius: 30px;
+  background: rgb(249, 249, 251);
+  backdrop-filter: blur(20px);
+  padding: 20px;
+  border-radius: 16px;
   margin-top: 30px;
+  border: 1px solid rgba(44, 40, 40, 0.139);
 }
 
 .feature-box h3 {
   font-size: 16px;
   font-weight: 600;
-  color: #2d3748;
+  color: #09132f;
   margin-bottom: 15px;
 }
 
 .feature-list {
   text-align: left;
   font-size: 14px;
-  color: #4a5568;
+  color: #09132f;
 }
 
 .feature-list div {
   margin-bottom: 10px;
+  padding-left: 20px;
+  position: relative;
+}
+
+.feature-list div::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: #1800ef;
+  font-weight: bold;
 }
 
 .feature-list div:last-child {
@@ -327,14 +449,15 @@
   width: 8px;
   height: 8px;
   border-radius: 4px;
-  background: #cbd5e0;
+  background: rgba(255, 255, 255, 0.3);
   cursor: pointer;
   transition: all 0.3s;
 }
 
 .indicator.active {
   width: 40px;
-  background: #4299e1;
+  background: #60a5fa;
+  box-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
 }
 
 /* ========== ANIMACIONES ========== */
@@ -397,160 +520,185 @@
     transform: translateY(-20px);
   }
 }
+
+/* ========== ESTADOS DISABLED PARA BOTONES ========== */
 .phase-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  background: #e2e8f0 !important;
-  color: #a0aec0 !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
   transform: scale(1) !important;
+  box-shadow: none !important;
 }
 
 .phase-button:disabled:hover {
   transform: scale(1) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
 }
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+  .form-section {
+    padding: 30px 20px;
+  }
+  
+  .portal-title {
+    font-size: 28px;
+  }
+  
+  .phase-buttons-wrapper {
+    flex-direction: column;
+  }
+  
+  .phase-button {
+    min-width: 100%;
+  }
+}
+
 /* ========== RESPONSIVE MOBILE ========== */
 @media (max-width: 930px) {
   .portal-container {
-      max-height: 100vh !important;
+    max-height: 100vh !important;
   }
   
   .form-section {
-      padding: 20px 1px !important;
-      overflow-y: auto !important;
-      max-height: 100vh !important;
+    padding: 20px 15px !important;
+    overflow-y: auto !important;
+    max-height: 100vh !important;
   }
   
   /* ===== AJUSTES PARA INFO SIDEBAR ===== */
   .info-section {
-      padding: 20px 20px !important; /* Reducir padding */
-      max-height: 100h !important; /* Limitar altura */
-      overflow-y: auto !important; /* Permitir scroll si es necesario */
+    padding: 20px 20px !important;
+    max-height: 100vh !important;
+    overflow-y: auto !important;
   }
   
   /* Reducir contenido del info sidebar */
   .emoji-icon {
-      font-size: 48px !important;
-      margin-bottom: 16px !important;
+    font-size: 48px !important;
+    margin-bottom: 16px !important;
   }
   
   .info-title {
-      font-size: 24px !important;
-      margin-bottom: 12px !important;
+    font-size: 24px !important;
+    margin-bottom: 12px !important;
   }
   
   .info-description {
-      font-size: 14px !important;
-      margin-bottom: 20px !important;
-      line-height: 1.4 !important;
+    font-size: 14px !important;
+    margin-bottom: 20px !important;
+    line-height: 1.4 !important;
   }
   
   .info-content {
-      max-width: 100% !important; /* Usar todo el ancho disponible */
+    max-width: 100% !important;
   }
   
   .feature-box {
-      padding: 16px !important;
-      margin-top: 20px !important;
+    padding: 16px !important;
+    margin-top: 20px !important;
   }
   
   .feature-box h3 {
-      font-size: 14px !important;
-      margin-bottom: 10px !important;
+    font-size: 14px !important;
+    margin-bottom: 10px !important;
   }
   
   .feature-list {
-      font-size: 13px !important;
+    font-size: 13px !important;
   }
   
   .feature-list div {
-      margin-bottom: 6px !important;
+    margin-bottom: 6px !important;
   }
   
   /* Reducir tamaño de las formas decorativas */
   .shape-one {
-      width: 200px !important;
-      height: 200px !important;
-      top: -50px !important;
-      right: -50px !important;
+    width: 200px !important;
+    height: 200px !important;
+    top: -50px !important;
+    right: -50px !important;
   }
   
   .carousel-indicators {
-      display: flex !important;
+    display: flex !important;
   }
   
   .back-to-form-button {
-      display: block !important;
+    display: block !important;
   }
 }
 
 @media (min-width: 969px) {
   .carousel-wrapper {
-      flex-wrap: nowrap !important;
-      gap: 0; /* ← Sin espacio entre secciones */
+    flex-wrap: nowrap !important;
+    gap: 0;
   }
   
   .form-section {
-      flex: 1.2 !important;
-      min-width: auto !important;
+    flex: 1.2 !important;
+    min-width: auto !important;
   }
   
   .info-section {
-      flex: 0.8 !important;
-      min-width: auto !important;
+    flex: 0.8 !important;
+    min-width: auto !important;
   }
   
   /* Eliminar cualquier borde o sombra que cause división */
   .form-section,
   .info-section {
-      box-shadow: none;
-      border: none;
+    box-shadow: none;
+    border: none;
   }
 }
 
 @media (max-width: 480px) {
   .form-section {
-      padding: 30px 20px !important;
+    padding: 30px 20px !important;
   }
   
   .portal-title {
-      font-size: 28px !important;
+    font-size: 28px !important;
   }
   
   /* ===== AJUSTES ADICIONALES PARA INFO SIDEBAR EN PANTALLAS MUY PEQUEÑAS ===== */
   .info-section {
-      padding: 20px 15px !important;
+    padding: 20px 15px !important;
   }
   
   .emoji-icon {
-      font-size: 40px !important;
-      margin-bottom: 12px !important;
+    font-size: 40px !important;
+    margin-bottom: 12px !important;
   }
   
   .info-title {
-      font-size: 20px !important;
-      margin-bottom: 10px !important;
+    font-size: 20px !important;
+    margin-bottom: 10px !important;
   }
   
   .info-description {
-      font-size: 13px !important;
-      margin-bottom: 16px !important;
+    font-size: 13px !important;
+    margin-bottom: 16px !important;
   }
   
   .feature-box {
-      padding: 12px !important;
-      margin-top: 16px !important;
+    padding: 12px !important;
+    margin-top: 16px !important;
   }
   
   .feature-box h3 {
-      font-size: 13px !important;
+    font-size: 13px !important;
   }
   
   .feature-list {
-      font-size: 12px !important;
+    font-size: 12px !important;
   }
   
   .shape-one {
-      width: 150px !important;
-      height: 150px !important;
+    width: 150px !important;
+    height: 150px !important;
   }
 }
