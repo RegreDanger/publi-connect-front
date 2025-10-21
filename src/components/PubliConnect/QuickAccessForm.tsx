@@ -12,28 +12,46 @@ interface QuickAccessFormProps {
 export default function QuickAccessForm({ data, handleChange, handleSubmit }: QuickAccessFormProps) {
   return (
     <div className="quick-form-wrapper">
-      <h2 className="form-title">¡Conéctate en 10 segundos! </h2>
-      <p className="form-subtitle">Solo necesitamos tu nombre y correo para darte 5 minutos gratis</p>
+      <p className="form-subtitle">Ingresa tus datos para comenzar</p>
 
-      {/* Inputs for nombre and correo using CSS classes: form-label and form-input */}
-      <div style={{ marginBottom: '12px' }}>
-        <label className="form-label">NOMBRE COMPLETO</label>
-        <input type="text" name="nombre" value={data.nombre} onChange={handleChange} required className="form-input" placeholder="Juan Pérez" />
+      {/* Label outside for nombre */}
+      <div className="input-group">
+        <label htmlFor="nombre-input" className="form-label-outside">Nombre completo</label>
+        <input
+          type="text"
+          name="nombre"
+          value={data.nombre}
+          onChange={handleChange}
+          required
+          className="form-input"
+          
+          id="nombre-input"
+        />
       </div>
 
-      <div style={{ marginBottom: '28px' }}>
-        <label className="form-label">CORREO ELECTRÓNICO</label>
-        <input type="email" name="correo" value={data.correo} onChange={handleChange} required className="form-input" placeholder="tu@email.com" translate="no" />
-        
+      {/* Label outside for correo */}
+      <div className="input-group">
+        <label htmlFor="correo-input" className="form-label-outside">Correo electrónico</label>
+        <input
+          type="email"
+          name="correo"
+          value={data.correo}
+          onChange={handleChange}
+          required
+          className="form-input"
+          placeholder="tu@email.com"
+          translate="no"
+          id="correo-input"
+        />
       </div>
 
       <button onClick={handleSubmit} className="quick-submit-button">
-        Conectarme Ahora (5 min gratis)
+        Conectarme Ahora
       </button>
 
-      <div className="tip-box">
-        <strong>Tip:</strong> Completa tu perfil después para WiFi ilimitado todo el día
-      </div>
+      <p className="tip-text">
+        Completa tu perfil después para WiFi ilimitado
+      </p>
     </div>
   );
 }

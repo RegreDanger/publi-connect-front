@@ -16,9 +16,10 @@ export default function InfoSidebar() {
       <div className="shape shape-two" /> 
       
       <div className="info-content">
-        <div className="emoji-icon">📡</div> {/* icono que deseemos */}
+        <div className="emoji-icon">📡</div> 
         <h2 className="info-title">
-          Bienvenido a <span translate="no">Publi-Connect</span>
+          Bienvenido a <br /> Publi-Connect<br />
+         
         </h2>
         <p className="info-description">
           Conéctate en segundos y navega gratis por 5 minutos

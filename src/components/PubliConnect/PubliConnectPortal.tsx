@@ -251,43 +251,72 @@ export default function PubliConnectPortal() {
         />
       );
     }
-    
+
     return (
       <CompleteAccessForm
-        quickData={quickData} 
+        quickData={quickData}
         completeData={completeData}
-        handleQuickChange={handleQuickChange} 
+        handleQuickChange={handleQuickChange}
         handleCompleteChange={handleCompleteChange}
         handleSubmit={handleCompleteSubmit}
       />
     );
   };
 
-  const renderPhaseButtons = () => (
-    <div className="phase-buttons-wrapper">
-      <button
-        onClick={() => setPhase('quick')}
-        className={`phase-button ${phase === 'quick' ? 'active' : ''}`}
-        disabled={!quickAccessCompleted && phase === 'complete'}
-      >
-        🚀 Acceso Rápido (5 min)
-      </button>
-      <button
-        onClick={() => setPhase('complete')}
-        className={`phase-button ${phase === 'complete' ? 'active' : ''}`}
-        disabled={!quickAccessCompleted}
-        title={!quickAccessCompleted ? 'Primero completa el acceso rápido' : ''}
-      >
-        {quickAccessCompleted ? '⭐ Acceso Completo' : '🔒 Acceso Completo (bloqueado)'}
-      </button>
-    </div>
-  );
+  const renderAccessSelector = () => {
+    if (quickAccessCompleted) {
+      // Mostrar botones de cambio de fase una vez completado el acceso rápido
+      return (
+        <div className="phase-toggle-wrapper">
+          <button
+            onClick={() => setPhase('quick')}
+            className={`phase-toggle-button ${phase === 'quick' ? 'active' : ''}`}
+          >
+            Acceso Rápido
+          </button>
+          <button
+            onClick={() => setPhase('complete')}
+            className={`phase-toggle-button ${phase === 'complete' ? 'active' : ''}`}
+          >
+            Acceso Completo
+          </button>
+        </div>
+      );
+    }
+
+    // Selector inicial con tarjetas
+    return (
+      <div className="access-selector">
+        <button
+          onClick={() => setPhase('quick')}
+          className={`access-card ${phase === 'quick' ? 'selected' : ''}`}
+        >
+          <div className="access-card-icon">⚡</div>
+          <div className="access-card-content">
+            <h3 className="access-card-title">Acceso Rápido</h3>
+            <p className="access-card-description">5 minutos gratis</p>
+          </div>
+        </button>
+        <button
+          onClick={() => setPhase('complete')}
+          className="access-card disabled"
+          disabled
+        >
+          <div className="access-card-icon">🔒</div>
+          <div className="access-card-content">
+            <h3 className="access-card-title">Acceso Ilimitado</h3>
+            <p className="access-card-description">Completa tu perfil primero</p>
+          </div>
+        </button>
+      </div>
+    );
+  };
 
   const renderHeader = () => (
     <div className="logo-header">
       <div className="pc-logo" translate="no">PC</div>
       <h1 className="portal-title" translate="no">Publi-Connect</h1>
-      <p className="portal-subtitle">Conéctate a nuestra red WiFi gratuita</p>
+      <p className="portal-subtitle">Conéctate a nuestra red WiFi</p>
     </div>
   );
 
@@ -304,12 +333,11 @@ export default function PubliConnectPortal() {
         >
           <div className="form-section">
             {renderHeader()}
-            {renderPhaseButtons()}
+            {renderAccessSelector()}
             {renderForm()}
           </div>
 
-          <InfoSidebar
-          />
+          <InfoSidebar />
         </div>
         
         <div className="carousel-indicators">

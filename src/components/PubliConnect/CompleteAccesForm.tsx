@@ -28,56 +28,57 @@ export default function CompleteAccessForm({
 }: CompleteAccessFormProps) {
   return (
     <div className="complete-form-wrapper">
-      <h2 className="form-title">
-        Acceso a WiFi
-      </h2>
       <p className="form-subtitle">
-        Completa tu perfil y disfruta de tu internet de forma mas sencilla.
+        Completa tu perfil para WiFi ilimitado
       </p>
-      
+
       {/* Nombre (from QuickData) */}
-      <div style={{ marginBottom: '12px' }}>
-        <label className="form-label">NOMBRE COMPLETO</label>
+      <div className="input-group">
+        <label htmlFor="complete-nombre-input" className="form-label-outside">Nombre completo</label>
         <input
           type="text"
           name="nombre"
           value={quickData.nombre}
           onChange={handleQuickChange}
-          placeholder="Juan Pérez"
           className="form-input"
+          placeholder="Juan Pérez"
           translate="no"
+          id="complete-nombre-input"
         />
       </div>
 
       {/* Correo (from QuickData) */}
-      <div style={{ marginBottom: '12px' }}>
-        <label className="form-label">CORREO ELECTRÓNICO</label>
+      <div className="input-group">
+        <label htmlFor="complete-correo-input" className="form-label-outside">Correo electrónico</label>
         <input
           type="email"
           name="correo"
           value={quickData.correo}
           onChange={handleQuickChange}
-          placeholder="tu@email.com"
           className="form-input"
+          placeholder="tu@email.com"
           translate="no"
+          id="complete-correo-input"
         />
       </div>
 
       {/* Teléfono (from CompleteData) */}
-      <div style={{ marginBottom: '12px' }}>
-        <label className="form-label">TELÉFONO</label>
+      <div className="input-group">
+        <label htmlFor="numero-input" className="form-label-outside">Teléfono</label>
         <input
           type="tel"
           name="numero"
           value={completeData.numero}
           onChange={handleCompleteChange}
           className="form-input"
+
+          id="numero-input"
         />
       </div>
 
       {/* Edad (from CompleteData) */}
-      <div style={{ marginBottom: '12px' }}>
-        <label className="form-label">EDAD</label>
+      <div className="input-group">
+        <label htmlFor="edad-input" className="form-label-outside">Edad</label>
         <input
           type="number"
           name="edad"
@@ -86,19 +87,22 @@ export default function CompleteAccessForm({
           min="1"
           max="100"
           className="form-input"
+
+          id="edad-input"
         />
       </div>
 
       {/* Género (from CompleteData) */}
-      <div style={{ marginBottom: '12px' }}>
-        <label className="form-label">GÉNERO</label>
+      <div className="input-group">
+        <label htmlFor="genero-input" className="form-label-outside">Género</label>
         <select
           name="genero"
           value={completeData.genero}
           onChange={handleCompleteChange}
           className="form-input select-field"
+          id="genero-input"
         >
-          <option value="">Seleccionar...</option>
+          <option value="">Seleccionar género...</option>
           <option value="masculino">Masculino</option>
           <option value="femenino">Femenino</option>
           <option value="otro">Otro</option>
@@ -106,8 +110,8 @@ export default function CompleteAccessForm({
       </div>
 
       {/* Código Postal (from CompleteData) */}
-      <div style={{ marginBottom: '28px' }}>
-        <label className="form-label">CÓDIGO POSTAL</label>
+      <div className="input-group">
+        <label htmlFor="codigoPostal-input" className="form-label-outside">Código postal</label>
         <input
           type="text"
           name="codigoPostal"
@@ -115,6 +119,8 @@ export default function CompleteAccessForm({
           onChange={handleCompleteChange}
           maxLength={5}
           className="form-input"
+
+          id="codigoPostal-input"
         />
       </div>
 
