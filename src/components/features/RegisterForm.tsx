@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { formatPhoneNumber, getRawPhone, calculateAge, getValidationError, fetchCurpData } from '@/utils';
+import { formatPhoneNumber, getRawPhone, calculateAge, getValidationError, fetchCurpData, registerPersonalAccount } from '@/utils';
 import { RegisterStep1 } from './RegisterStep1';
 import { RegisterStep2 } from './RegisterStep2';
 import { RegisterStep3 } from './RegisterStep3';
@@ -97,12 +97,29 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ setAuthMode, onShowC
   const handleFinalRegister = (e: React.FormEvent) => {
     e.preventDefault();
     if (validateStep3()) {
-      setState((prev) => ({ ...prev, loading: true }));
-      setTimeout(() => {
-        setState((prev) => ({ ...prev, loading: false }));
-        alert('¡Bienvenido a Publi Connect!');
-        setAuthMode('login');
-      }, 2000);
+      (async () => {
+        setState((prev) => ({ ...prev, loading: true }));
+        try {
+          if (!state.formData.curpData) throw new Error('Falta información personal');
+          const name = `${state.formData.curpData.nombres} ${state.formData.curpData.apellidoPaterno} ${state.formData.curpData.apellidoMaterno}`.trim();
+          const age = state.formData.edadCalculada ?? 0;
+          const gender = state.formData.curpData.genero ?? '';
+          const email = state.formData.correo;
+          const phoneNo = getRawPhone(state.formData.telefono);
+          const zipCode = state.formData.codigoPostal;
+          const pwd = state.formData.contrasena;
+
+          await registerPersonalAccount({ name, age, gender, email, phoneNo, zipCode, pwd });
+
+          setState((prev) => ({ ...prev, loading: false }));
+          alert('¡Bienvenido a Publi Connect!');
+          setAuthMode('login');
+        } catch (err: any) {
+          setState((prev) => ({ ...prev, loading: false }));
+          console.error(err);
+          alert(err?.message || 'Error en el registro');
+        }
+      })();
     }
   };
 
