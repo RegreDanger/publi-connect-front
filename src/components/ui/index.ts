@@ -4,5 +4,5 @@
  */
 
 export { Button, type ButtonProps } from './Button';
-export { Input, type InputProps } from './Input';
+export { Input, type InputProps } from './input';
 export { SocialButton, type SocialButtonProps } from './SocialButton';

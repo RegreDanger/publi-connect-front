@@ -57,3 +57,58 @@ export const registerUser = async (_data: {
     }, 2000);
   });
 };
+
+/**
+ * Register personal account against backend service.
+ * Sends POST to http://backend:8082/auth/personal/register
+ */
+export const registerPersonalAccount = async (data: {
+  name: string;
+  age: number | null;
+  gender: string;
+  email: string;
+  phoneNo: string;
+  zipCode: string;
+  macAddress?: string;
+  pwd: string;
+}): Promise<{ success: boolean }> => {
+  const base = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8082';
+  const url = `${base.replace(/\/$/, '')}/auth/personal/register`;
+
+  const payload = {
+    name: data.name,
+    age: data.age ?? 0,
+    gender: data.gender,
+    email: data.email,
+    phoneNo: data.phoneNo,
+    zipCode: data.zipCode,
+    macAddress: data.macAddress ?? getOrCreatePseudoMac(),
+    pwd: data.pwd
+  };
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(payload),
+  });
+
+  if (res.ok) return { success: true };
+
+  const text = await res.text().catch(() => '');
+  throw new Error(`Registration failed: ${res.status} ${text}`);
+};
+const getOrCreatePseudoMac = (): string => {
+  try {
+    const key = 'publi_connect_device_mac';
+    const existing = localStorage.getItem(key);
+    if (existing && existing.length) return existing;
+    const bytes = new Uint8Array(6);
+    crypto.getRandomValues(bytes);
+    const mac = Array.from(bytes).map((b) => b.toString(16).padStart(2, '0')).join(':');
+    localStorage.setItem(key, mac);
+    return mac;
+  } catch (e) {
+    return '00:00:00:00:00:00';
+  }
+};

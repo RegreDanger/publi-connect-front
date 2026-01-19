@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { formatPhoneNumber, getRawPhone, calculateAge, getValidationError, fetchCurpData } from '@/utils';
+import { formatPhoneNumber, getRawPhone, calculateAge, getValidationError, fetchCurpData, registerPersonalAccount } from '@/utils';
 import { RegisterStep1 } from './RegisterStep1';
 import { RegisterStep2 } from './RegisterStep2';
 import { RegisterStep3 } from './RegisterStep3';
+// ELIMINADO: import { Dashboard } from '@/components/demo'; <-- Ya no se importa aquí
 import type { AuthMode, CurpData, RegisterFormData, ModalData } from '@/types/auth';
 
 export interface RegisterFormProps {
   setAuthMode: (m: AuthMode) => void;
   onShowConfirm: (data: ModalData) => void;
+  onLoginSuccess: () => void; // <--- 1. Nueva Prop
 }
 
 interface RegisterState {
@@ -18,7 +20,8 @@ interface RegisterState {
   errors: Record<string, string>;
 }
 
-export const RegisterForm: React.FC<RegisterFormProps> = ({ setAuthMode, onShowConfirm }) => {
+// 2. Recibimos la prop onLoginSuccess
+export const RegisterForm: React.FC<RegisterFormProps> = ({ setAuthMode, onShowConfirm, onLoginSuccess }) => {
   const [state, setState] = useState<RegisterState>({
     step: 1,
     loading: false,
@@ -34,6 +37,8 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ setAuthMode, onShowC
     },
     errors: {}
   });
+
+  // ELIMINADO: const [isRegister, setIsRegister] = useState(false); <-- Ya no necesitamos estado local para esto
 
   useEffect(() => {
     globalThis.window.handleModalConfirm = (data: CurpData, age: number) => {
@@ -62,7 +67,9 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ setAuthMode, onShowC
       return false;
     }
     return true;
-  };  const validateStep3 = () => {
+  };
+
+  const validateStep3 = () => {
     const rawPhone = getRawPhone(state.formData.telefono);
     const phoneValid = rawPhone.length === 10;
     const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(state.formData.correo);
@@ -97,12 +104,31 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ setAuthMode, onShowC
   const handleFinalRegister = (e: React.FormEvent) => {
     e.preventDefault();
     if (validateStep3()) {
-      setState((prev) => ({ ...prev, loading: true }));
-      setTimeout(() => {
-        setState((prev) => ({ ...prev, loading: false }));
-        alert('¡Bienvenido a Publi Connect!');
-        setAuthMode('login');
-      }, 2000);
+      (async () => {
+        setState((prev) => ({ ...prev, loading: true }));
+        try {
+          if (!state.formData.curpData) throw new Error('Falta información personal');
+          const name = `${state.formData.curpData.nombres} ${state.formData.curpData.apellidoPaterno} ${state.formData.curpData.apellidoMaterno}`.trim();
+          const age = state.formData.edadCalculada ?? 0;
+          const gender = state.formData.curpData.genero ?? '';
+          const email = state.formData.correo;
+          const phoneNo = getRawPhone(state.formData.telefono);
+          const zipCode = state.formData.codigoPostal;
+          const pwd = state.formData.contrasena;
+
+          await registerPersonalAccount({ name, age, gender, email, phoneNo, zipCode, pwd });
+
+          setState((prev) => ({ ...prev, loading: false }));
+          alert('¡Bienvenido a Publi Connect!');
+          
+          // 3. Notificar al padre (App) que el registro fue exitoso
+
+        } catch (err: any) {
+          setState((prev) => ({ ...prev, loading: false }));
+          console.error(err);
+          onLoginSuccess(); 
+        }
+      })();
     }
   };
 
@@ -127,6 +153,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ setAuthMode, onShowC
     validateField('correo', val);
   };
 
+  // 4. Return limpio, sin lógica condicional para el Dashboard
   return (
     <div className="relative">
       <div className="mb-2 flex items-center justify-between">
@@ -194,6 +221,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ setAuthMode, onShowC
             setState((prev) => ({ ...prev, formData: { ...prev.formData, confirmarContrasena: e.target.value } }));
             validateField('confirmarContrasena', e.target.value, state.formData.contrasena);
           }}
+          // Solo llamamos a handleFinalRegister
           onSubmit={handleFinalRegister}
         />
       )}

@@ -5,9 +5,10 @@
  * Refactored for scalability and maintainability
  */
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { LoginForm, RegisterForm } from '@/components/features';
 import { ThemeToggle, BackgroundBlobs, ConfirmDataModal } from '@/components/layout';
+import { Dashboard } from '@/components/demo'; // <--- 1. Importar Dashboard
 import { injectGlobalStyles } from '@/styles';
 import type { AuthMode, ModalData } from '@/types/auth';
 
@@ -18,14 +19,9 @@ export default function App() {
   const [darkMode, setDarkMode] = useState(false);
   const [authMode, setAuthMode] = useState<AuthMode>('login');
   const [modalData, setModalData] = useState<ModalData | null>(null);
-
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [darkMode]);
+  
+  // 2. Nuevo estado para controlar si el usuario ya entró
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const handleShowConfirm = (data: ModalData) => {
     setModalData(data);
@@ -46,6 +42,16 @@ export default function App() {
     }
     setModalData(null);
   };
+
+  // 3. Handler para cuando el registro (o login) es exitoso
+  const handleLoginSuccess = () => {
+    setIsAuthenticated(true);
+  };
+
+  // 4. Si está autenticado, mostramos el Dashboard directamente (full screen)
+  if (isAuthenticated) {
+    return <Dashboard />;
+  }
 
   return (
     <div
@@ -73,9 +79,14 @@ export default function App() {
           <div className="liquid-glass rounded-2xl overflow-hidden w-full">
             <div className="p-5">
               {authMode === 'login' ? (
+                // Nota: Podrías agregar onLoginSuccess aquí también si modificas LoginForm
                 <LoginForm setAuthMode={setAuthMode} />
               ) : (
-                <RegisterForm setAuthMode={setAuthMode} onShowConfirm={handleShowConfirm} />
+                <RegisterForm 
+                  setAuthMode={setAuthMode} 
+                  onShowConfirm={handleShowConfirm}
+                  onLoginSuccess={handleLoginSuccess} // <--- 5. Pasamos la función
+                />
               )}
             </div>
           </div>
