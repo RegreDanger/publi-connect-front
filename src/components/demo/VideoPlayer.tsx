@@ -40,14 +40,14 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ video, onClose }) => {
           <div className="glass-content">
             {video.url ? (
               <video
-                src={"http://3.134.108.30/api/v1/videos/dummy-ad"}
+                src={"https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"}
                 controls
                 autoPlay={true}
                 className="w-full h-full object-cover"
               />
             ) : (
               <video
-                src={"http://3.134.108.30/api/v1/videos/dummy-ad"}
+                src={"https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"}
                 controls
                 autoPlay={true}
                 className="w-full h-full object-cover"
