@@ -2,6 +2,17 @@ import { useRef, useEffect } from 'react';
 import { Renderer, Program, Mesh, Triangle, Vec2 } from 'ogl';
 import './DarkVeil.css';
 
+// 1. Definimos la interfaz para los Props
+interface DarkVeilProps {
+  hueShift?: number;
+  noiseIntensity?: number;
+  scanlineIntensity?: number;
+  speed?: number;
+  scanlineFrequency?: number;
+  warpAmount?: number;
+  resolutionScale?: number;
+}
+
 const vertex = `
 attribute vec2 position;
 void main(){gl_Position=vec4(position,0.0,1.0);}
@@ -82,11 +93,18 @@ export default function DarkVeil({
   scanlineFrequency = 0,
   warpAmount = 0,
   resolutionScale = 1
-}) {
-  const ref = useRef(null);
+}: DarkVeilProps) { // 2. Aplicamos la interfaz aquí
+  
+  // 3. Tipamos el useRef como HTMLCanvasElement
+  const ref = useRef<HTMLCanvasElement>(null);
+
   useEffect(() => {
     const canvas = ref.current;
+    
+    // 4. Validación de seguridad (por si el componente se desmonta rápido)
+    if (!canvas) return;
     const parent = canvas.parentElement;
+    if (!parent) return;
 
     const renderer = new Renderer({
       dpr: Math.min(window.devicePixelRatio, 2),
@@ -113,10 +131,13 @@ export default function DarkVeil({
     const mesh = new Mesh(gl, { geometry, program });
 
     const resize = () => {
-      const w = parent.clientWidth,
-        h = parent.clientHeight;
-      renderer.setSize(w * resolutionScale, h * resolutionScale);
-      program.uniforms.uResolution.value.set(w, h);
+      // Necesitamos asegurar que parent existe dentro del closure
+      if (parent) {
+        const w = parent.clientWidth,
+          h = parent.clientHeight;
+        renderer.setSize(w * resolutionScale, h * resolutionScale);
+        program.uniforms.uResolution.value.set(w, h);
+      }
     };
 
     window.addEventListener('resize', resize);
@@ -143,5 +164,6 @@ export default function DarkVeil({
       window.removeEventListener('resize', resize);
     };
   }, [hueShift, noiseIntensity, scanlineIntensity, speed, scanlineFrequency, warpAmount, resolutionScale]);
+
   return <canvas ref={ref} className="darkveil-canvas" />;
 }

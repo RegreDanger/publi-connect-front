@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { CompanyCard } from './CompanyCard';
 import { AdsList } from './AdsList';
 import { VideoPlayer } from './VideoPlayer';
-import DarkVeil from './DarkVeil';
+import DarkVeil from './DarkVeil.tsx';
 import { injectDemoStyles, createSVGFilter } from '@/styles/demo';
 import type { Company, Ad, VideoData } from '@/types/demo';
 

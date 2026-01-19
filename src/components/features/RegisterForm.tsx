@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { formatPhoneNumber, getRawPhone, calculateAge, getValidationError, fetchCurpData, registerPersonalAccount } from '@/utils';
-import { formatPhoneNumber, getRawPhone, calculateAge, getValidationError, fetchCurpData, registerPersonalAccount } from '@/utils';
 import { RegisterStep1 } from './RegisterStep1';
 import { RegisterStep2 } from './RegisterStep2';
 import { RegisterStep3 } from './RegisterStep3';
@@ -124,7 +123,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ setAuthMode, onShowC
           
           // 3. Notificar al padre (App) que el registro fue exitoso
 
-        } catch (err: any) {
+        } catch (err: unknown) {
           setState((prev) => ({ ...prev, loading: false }));
           console.error(err);
           onLoginSuccess(); 
