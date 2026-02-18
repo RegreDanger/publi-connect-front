@@ -1,40 +1,33 @@
 import { useState } from 'react';
-import { Smartphone, Mail, Lock, Loader2, Apple } from 'lucide-react';
+import { Mail, Lock, Loader2, Apple } from 'lucide-react';
 import { Button, Input, SocialButton } from '@/components/ui';
-import { formatPhoneNumber, getRawPhone, isValidEmail } from '@/utils';
+import { ApiError, isValidEmail, loginAccount } from '@/utils';
 import type { AuthMode } from '@/types/auth';
 
 export interface LoginFormProps {
   setAuthMode: (m: AuthMode) => void;
+  onLoginSuccess: () => void;
 }
 
-type LoginMethod = 'phone' | 'email';
-
 interface LoginState {
-  method: LoginMethod;
-  phone: string;
   email: string;
   password: string;
   errors: Record<string, string>;
   loading: boolean;
+  submitError: string;
 }
 
-export const LoginForm: React.FC<LoginFormProps> = ({ setAuthMode }) => {
+export const LoginForm: React.FC<LoginFormProps> = ({ setAuthMode, onLoginSuccess }) => {
   const [state, setState] = useState<LoginState>({
-    method: 'phone',
-    phone: '',
     email: '',
     password: '',
     errors: {},
-    loading: false
+    loading: false,
+    submitError: ''
   });
 
   const validateField = (name: string, value: string) => {
     let errorMsg = '';
-    if (name === 'phone') {
-      const raw = getRawPhone(value);
-      if (value && raw.length < 10) errorMsg = 'Incompleto';
-    }
     if (name === 'email') {
       if (value && !isValidEmail(value)) errorMsg = 'Inválido';
     }
@@ -44,34 +37,39 @@ export const LoginForm: React.FC<LoginFormProps> = ({ setAuthMode }) => {
     setState((prev) => ({ ...prev, errors: { ...prev.errors, [name]: errorMsg } }));
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!isValidEmail(state.email)) {
+      setState((prev) => ({ ...prev, errors: { ...prev.errors, email: 'Inválido' } }));
+      return;
+    }
     if (state.password.length < 6) {
       setState((prev) => ({ ...prev, errors: { ...prev.errors, password: 'Mínimo 6 caracteres' } }));
       return;
     }
-    setState((prev) => ({ ...prev, loading: true }));
-    setTimeout(() => setState((prev) => ({ ...prev, loading: false })), 2000);
-  };
 
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = getRawPhone(e.target.value);
-    if (raw.length <= 10) {
-      const formatted = formatPhoneNumber(raw);
-      setState((prev) => ({ ...prev, phone: formatted }));
-      validateField('phone', formatted);
+    setState((prev) => ({ ...prev, loading: true, submitError: '' }));
+    try {
+      await loginAccount({
+        email: state.email.trim(),
+        pwd: state.password,
+      });
+      setState((prev) => ({ ...prev, loading: false }));
+      onLoginSuccess();
+    } catch (err) {
+      const message = err instanceof ApiError ? err.message : 'No fue posible iniciar sesión';
+      setState((prev) => ({ ...prev, loading: false, submitError: message }));
     }
   };
 
   const isButtonDisabled =
     state.loading ||
-    !!state.errors.phone ||
     !!state.errors.email ||
     !!state.errors.password ||
+    !state.email ||
     !state.password ||
-    state.password.length < 6 ||
-    (state.method === 'phone' && !state.phone) ||
-    (state.method === 'email' && !state.email);
+    state.password.length < 6;
 
   return (
     <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -79,59 +77,23 @@ export const LoginForm: React.FC<LoginFormProps> = ({ setAuthMode }) => {
         <h2 className="text-lg font-bold tracking-tight text-gray-900 dark:text-white">
           Bienvenido de nuevo
         </h2>
-        <p className="text-gray-500 dark:text-gray-400 text-xs">Conéctate a Publi Connect</p>
-      </div>
-
-      <div className="p-0.5 bg-gray-100 dark:bg-white/5 rounded-lg flex border border-gray-200 dark:border-white/5">
-        <button
-          onClick={() => setState((prev) => ({ ...prev, method: 'phone', errors: {} }))}
-          className={`flex-1 py-1 text-xs font-bold rounded-md transition-all ${
-            state.method === 'phone'
-              ? 'bg-white dark:bg-white/10 shadow-sm text-black dark:text-white'
-              : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'
-          }`}
-        >
-          Celular
-        </button>
-        <button
-          onClick={() => setState((prev) => ({ ...prev, method: 'email', errors: {} }))}
-          className={`flex-1 py-1 text-xs font-bold rounded-md transition-all ${
-            state.method === 'email'
-              ? 'bg-white dark:bg-white/10 shadow-sm text-black dark:text-white'
-              : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'
-          }`}
-        >
-          Correo
-        </button>
+        <p className="text-gray-500 dark:text-gray-400 text-xs">Inicia sesión con tu correo</p>
       </div>
 
       <form onSubmit={handleLogin} className="space-y-2.5">
-        {state.method === 'phone' ? (
-          <Input
-            icon={Smartphone}
-            type="tel"
-            placeholder="+52 55 1234 5678"
-            label="Número de Celular"
-            value={state.phone}
-            onChange={handlePhoneChange}
-            error={state.errors.phone}
-            isValid={!state.errors.phone && state.phone.length > 0}
-          />
-        ) : (
-          <Input
-            icon={Mail}
-            type="email"
-            placeholder="usuario@ejemplo.com"
-            label="Correo Electrónico"
-            value={state.email}
-            onChange={(e) => {
-              setState((prev) => ({ ...prev, email: e.target.value }));
-              validateField('email', e.target.value);
-            }}
-            error={state.errors.email}
-            isValid={!state.errors.email && state.email.length > 0}
-          />
-        )}
+        <Input
+          icon={Mail}
+          type="email"
+          placeholder="usuario@ejemplo.com"
+          label="Correo Electrónico"
+          value={state.email}
+          onChange={(e) => {
+            setState((prev) => ({ ...prev, email: e.target.value, submitError: '' }));
+            validateField('email', e.target.value);
+          }}
+          error={state.errors.email}
+          isValid={!state.errors.email && state.email.length > 0}
+        />
         <Input
           type="password"
           placeholder="••••••••"
@@ -139,12 +101,18 @@ export const LoginForm: React.FC<LoginFormProps> = ({ setAuthMode }) => {
           icon={Lock}
           value={state.password}
           onChange={(e) => {
-            setState((prev) => ({ ...prev, password: e.target.value }));
+            setState((prev) => ({ ...prev, password: e.target.value, submitError: '' }));
             validateField('password', e.target.value);
           }}
           error={state.errors.password}
           isValid={!state.errors.password && state.password.length >= 6}
         />
+
+        {state.submitError && (
+          <p className="text-[10px] text-red-600 dark:text-red-400 text-center font-medium">
+            {state.submitError}
+          </p>
+        )}
 
         <div className="flex justify-end">
           <button type="button" className="text-[10px] font-medium text-blue-600 hover:underline dark:text-blue-400">

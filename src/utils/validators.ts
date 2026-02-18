@@ -10,7 +10,18 @@ export const isValidEmail = (email: string): boolean => {
 };
 
 export const calculateAge = (birthDateString: string): number => {
-  const [day, month, year] = birthDateString.split('/').map(Number);
+  let day: number;
+  let month: number;
+  let year: number;
+
+  if (birthDateString.includes('/')) {
+    [day, month, year] = birthDateString.split('/').map(Number);
+  } else if (birthDateString.includes('-')) {
+    [year, month, day] = birthDateString.split('-').map(Number);
+  } else {
+    return 0;
+  }
+
   const today = new Date();
   let age = today.getFullYear() - year;
   const m = today.getMonth() + 1 - month;
@@ -27,7 +38,7 @@ export const getValidationError = (
 ): string => {
   switch (field) {
     case 'codigoPostal':
-      return value && value.length < 5 ? 'Incompleto' : '';
+      return value && !/^(0[1-9]\d{3}|[1-9]\d{4})$/.test(value) ? 'CP inválido' : '';
     case 'telefono': {
       const rawPhone = getRawPhone(value);
       return value && rawPhone.length < 10 ? 'Incompleto' : '';

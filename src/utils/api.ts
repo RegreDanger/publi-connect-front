@@ -1,66 +1,148 @@
 /**
  * API Services
- * Mock API functions for authentication and data fetching
+ * HTTP services for authentication and data fetching
  */
 
 import type { CurpData } from '@/types/auth';
 
-/**
- * Simulated API call to fetch CURP data
- * TODO: Replace with actual API endpoint
- */
+const DEFAULT_BACKEND_URL = 'http://localhost:8080/api/v1';
+const CSRF_HEADER = 'X-XSRF-TOKEN';
+const UNAUTHORIZED_MESSAGE = 'Credenciales inválidas';
+const CONFLICT_MESSAGE = 'El correo ya está registrado';
+
+export class ApiError extends Error {
+  status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+  }
+}
+
+const getBaseUrl = () => (import.meta.env.VITE_BACKEND_URL || DEFAULT_BACKEND_URL).replace(/\/$/, '');
+
+const readErrorMessage = async (res: Response): Promise<string> => {
+  if (res.status === 401) return UNAUTHORIZED_MESSAGE;
+  if (res.status === 409) return CONFLICT_MESSAGE;
+
+  const text = await res.text().catch(() => '');
+  if (!text) return `Error HTTP ${res.status}`;
+
+  try {
+    const parsed = JSON.parse(text) as { message?: string; detail?: string; error?: string };
+    return parsed.detail || parsed.message || parsed.error || `Error HTTP ${res.status}`;
+  } catch {
+    return text;
+  }
+};
+
+export interface LoginAccountPayload {
+  email: string;
+  pwd: string;
+}
+
+export interface RegisterUserPayload {
+  name: string;
+  age: number;
+  gender: 'MALE' | 'FEMALE';
+  email: string;
+  phoneNo: string;
+  zipCode: string;
+  macAddress: string;
+  pwd: string;
+}
+
+interface CsrfResponse {
+  csrfToken: string;
+}
+
 export const fetchCurpData = async (curp: string): Promise<CurpData> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        curp: curp.toUpperCase(),
-        nombres: 'ALEJANDRO',
-        apellidoPaterno: 'LOPEZ',
-        apellidoMaterno: 'PEREZ',
-        genero: 'HOMBRE',
-        fechaNacimiento: '15/08/1995',
-        estado: 'CIUDAD DE MEXICO'
-      });
-    }, 1500);
+  const normalizedCurp = curp.trim().toUpperCase();
+  const url = `${getBaseUrl()}/public/curp/${encodeURIComponent(normalizedCurp)}`;
+
+  const res = await fetch(url, {
+    method: 'GET',
+    credentials: 'include',
   });
+
+  if (!res.ok) {
+    if (res.status === 400) throw new ApiError('CURP inválida', 400);
+    if (res.status === 404) throw new ApiError('Servicio no disponible en backend actual', 404);
+    throw new ApiError('Error al validar CURP, intenta de nuevo', res.status);
+  }
+
+  return (await res.json()) as CurpData;
+};
+
+export const validateCurp = fetchCurpData;
+
+export const getCsrfToken = async (): Promise<string> => {
+  const url = `${getBaseUrl()}/auth/csrf`;
+  const res = await fetch(url, {
+    method: 'GET',
+    credentials: 'include',
+  });
+
+  if (!res.ok) {
+    const message = await readErrorMessage(res);
+    throw new ApiError(message, res.status);
+  }
+
+  const data = (await res.json()) as CsrfResponse;
+  if (!data?.csrfToken) {
+    throw new ApiError('No se recibió csrfToken del backend', 500);
+  }
+  return data.csrfToken;
+};
+
+export const loginAccount = async (payload: LoginAccountPayload): Promise<void> => {
+  const csrfToken = await getCsrfToken();
+  const url = `${getBaseUrl()}/auth/login`;
+
+  const res = await fetch(url, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+      [CSRF_HEADER]: csrfToken,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (res.status === 204) return;
+
+  const message = await readErrorMessage(res);
+  throw new ApiError(message, res.status);
 };
 
 /**
- * Simulated login API call
- * TODO: Replace with actual authentication endpoint
+ * Register account against backend service.
+ * Sends POST to /users
  */
-export const loginUser = async (
-  _method: 'phone' | 'email',
-  _value: string,
-  _password: string
-): Promise<{ success: boolean; token?: string; error?: string }> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({ success: true, token: 'mock_token_' + Date.now() });
-    }, 2000);
+export const registerUser = async (payload: RegisterUserPayload): Promise<void> => {
+  const csrfToken = await getCsrfToken();
+  const url = `${getBaseUrl()}/users`;
+
+  const res = await fetch(url, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+      [CSRF_HEADER]: csrfToken,
+    },
+    body: JSON.stringify(payload),
   });
+
+  if (res.status === 204) return;
+
+  if (res.status === 409) throw new ApiError('El correo ya está registrado', 409);
+  if (res.status === 400) throw new ApiError('Datos inválidos, revisa el formulario', 400);
+  throw new ApiError('No se pudo completar el registro', res.status);
 };
 
 /**
- * Simulated register API call
- * TODO: Replace with actual registration endpoint
- */
-export const registerUser = async (_data: {
-  telefono: string;
-  correo: string;
-  contrasena: string;
-  codigoPostal: string;
-}): Promise<{ success: boolean; token?: string; error?: string }> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({ success: true, token: 'mock_token_' + Date.now() });
-    }, 2000);
-  });
-};
-
-/**
- * Register personal account against backend service.
- * Sends POST to http://backend:8082/auth/personal/register
+ * Backward-compatible wrapper used by current register flow.
  */
 export const registerPersonalAccount = async (data: {
   name: string;
@@ -72,33 +154,24 @@ export const registerPersonalAccount = async (data: {
   macAddress?: string;
   pwd: string;
 }): Promise<{ success: boolean }> => {
-  const base = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8082';
-  const url = `${base.replace(/\/$/, '')}/auth/personal/register`;
+  const normalizedGender: 'MALE' | 'FEMALE' =
+    String(data.gender).toUpperCase() === 'FEMALE' ? 'FEMALE' : 'MALE';
 
-  const payload = {
+  await registerUser({
     name: data.name,
     age: data.age ?? 0,
-    gender: data.gender,
+    gender: normalizedGender,
     email: data.email,
     phoneNo: data.phoneNo,
     zipCode: data.zipCode,
-    macAddress: data.macAddress ?? getOrCreatePseudoMac(),
-    pwd: data.pwd
-  };
-
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify(payload),
+    macAddress: data.macAddress ?? getOrCreateDeviceMac(),
+    pwd: data.pwd,
   });
 
-  if (res.ok) return { success: true };
-
-  const text = await res.text().catch(() => '');
-  throw new Error(`Registration failed: ${res.status} ${text}`);
+  return { success: true };
 };
-const getOrCreatePseudoMac = (): string => {
+
+export const getOrCreateDeviceMac = (): string => {
   try {
     const key = 'publi_connect_device_mac';
     const existing = localStorage.getItem(key);
@@ -108,7 +181,7 @@ const getOrCreatePseudoMac = (): string => {
     const mac = Array.from(bytes).map((b) => b.toString(16).padStart(2, '0')).join(':');
     localStorage.setItem(key, mac);
     return mac;
-  } catch (e) {
+  } catch {
     return '00:00:00:00:00:00';
   }
 };

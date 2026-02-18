@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { formatPhoneNumber, getRawPhone, calculateAge, getValidationError, fetchCurpData, registerPersonalAccount } from '@/utils';
+import {
+  ApiError,
+  formatPhoneNumber,
+  getRawPhone,
+  calculateAge,
+  getOrCreateDeviceMac,
+  getValidationError,
+  validateCurp,
+  registerUser,
+} from '@/utils';
 import { RegisterStep1 } from './RegisterStep1';
 import { RegisterStep2 } from './RegisterStep2';
 import { RegisterStep3 } from './RegisterStep3';
@@ -18,6 +27,8 @@ interface RegisterState {
   curpInput: string;
   formData: RegisterFormData;
   errors: Record<string, string>;
+  submitError: string;
+  submitSuccess: boolean;
 }
 
 // 2. Recibimos la prop onLoginSuccess
@@ -35,7 +46,9 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ setAuthMode, onShowC
       contrasena: '',
       confirmarContrasena: ''
     },
-    errors: {}
+    errors: {},
+    submitError: '',
+    submitSuccess: false
   });
 
   // ELIMINADO: const [isRegister, setIsRegister] = useState(false); <-- Ya no necesitamos estado local para esto
@@ -58,11 +71,18 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ setAuthMode, onShowC
     setState((prev) => ({ ...prev, errors: { ...prev.errors, [field]: error } }));
   };
 
+  const normalizeCurp = (value: string) =>
+    value
+      .toUpperCase()
+      .replaceAll(/[^A-Z0-9]/g, '')
+      .slice(0, 18);
+
   const validateStep2 = () => {
-    if (!state.formData.codigoPostal?.length || state.formData.codigoPostal.length !== 5) {
+    const isValidZip = /^(0[1-9]\d{3}|[1-9]\d{4})$/.test(state.formData.codigoPostal);
+    if (!isValidZip) {
       setState((prev) => ({
         ...prev,
-        errors: { ...prev.errors, codigoPostal: 'Requerido' }
+        errors: { ...prev.errors, codigoPostal: 'CP inválido' }
       }));
       return false;
     }
@@ -88,12 +108,21 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ setAuthMode, onShowC
 
   const triggerCurpSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (state.curpInput.length < 18) return;
-    setState((prev) => ({ ...prev, loading: true }));
-    const data = await fetchCurpData(state.curpInput);
-    const age = calculateAge(data.fechaNacimiento);
-    setState((prev) => ({ ...prev, loading: false }));
-    onShowConfirm({ data, age });
+    if (!/^[A-Z0-9]{18}$/.test(state.curpInput)) {
+      setState((prev) => ({ ...prev, submitError: 'CURP inválida' }));
+      return;
+    }
+    setState((prev) => ({ ...prev, loading: true, submitError: '' }));
+    try {
+      const data = await validateCurp(state.curpInput);
+      const age = calculateAge(data.fechaNacimiento);
+      setState((prev) => ({ ...prev, loading: false, submitSuccess: false }));
+      onShowConfirm({ data, age });
+    } catch (err: unknown) {
+      const message = err instanceof ApiError || err instanceof Error ? err.message : 'No se pudo validar la CURP';
+      setState((prev) => ({ ...prev, loading: false, submitError: message, submitSuccess: false }));
+      console.error(err);
+    }
   };
 
   const handlePersonalData = (e: React.FormEvent) => {
@@ -105,28 +134,42 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ setAuthMode, onShowC
     e.preventDefault();
     if (validateStep3()) {
       (async () => {
-        setState((prev) => ({ ...prev, loading: true }));
+        setState((prev) => ({ ...prev, loading: true, submitError: '', submitSuccess: false }));
         try {
           if (!state.formData.curpData) throw new Error('Falta información personal');
           const name = `${state.formData.curpData.nombres} ${state.formData.curpData.apellidoPaterno} ${state.formData.curpData.apellidoMaterno}`.trim();
           const age = state.formData.edadCalculada ?? 0;
-          const gender = state.formData.curpData.genero ?? '';
+          if (age < 18 || age > 150) {
+            throw new Error('La edad debe estar entre 18 y 150 años');
+          }
+          const generoNormalizado = (state.formData.curpData.genero || '').toUpperCase();
+          const gender =
+            generoNormalizado === 'MUJER' || generoNormalizado === 'FEMENINO' || generoNormalizado === 'FEMALE'
+              ? 'FEMALE'
+              : 'MALE';
           const email = state.formData.correo;
           const phoneNo = getRawPhone(state.formData.telefono);
           const zipCode = state.formData.codigoPostal;
           const pwd = state.formData.contrasena;
 
-          await registerPersonalAccount({ name, age, gender, email, phoneNo, zipCode, pwd });
+          await registerUser({
+            name,
+            age,
+            gender,
+            email,
+            phoneNo,
+            zipCode,
+            macAddress: getOrCreateDeviceMac(),
+            pwd,
+          });
 
-          setState((prev) => ({ ...prev, loading: false }));
-          alert('¡Bienvenido a Publi Connect!');
-          
-          // 3. Notificar al padre (App) que el registro fue exitoso
+          setState((prev) => ({ ...prev, loading: false, submitSuccess: true }));
+          onLoginSuccess();
 
         } catch (err: unknown) {
-          setState((prev) => ({ ...prev, loading: false }));
+          const message = err instanceof ApiError || err instanceof Error ? err.message : 'No se pudo completar el registro';
+          setState((prev) => ({ ...prev, loading: false, submitError: message, submitSuccess: false }));
           console.error(err);
-          onLoginSuccess(); 
         }
       })();
     }
@@ -134,7 +177,12 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ setAuthMode, onShowC
 
   const handleCPChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value.replaceAll(/\D/g, '').slice(0, 5);
-    setState((prev) => ({ ...prev, formData: { ...prev.formData, codigoPostal: val } }));
+    setState((prev) => ({
+      ...prev,
+      formData: { ...prev.formData, codigoPostal: val },
+      submitError: '',
+      submitSuccess: false
+    }));
     validateField('codigoPostal', val);
   };
 
@@ -142,14 +190,24 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ setAuthMode, onShowC
     const raw = getRawPhone(e.target.value);
     if (raw.length <= 10) {
       const formatted = formatPhoneNumber(raw);
-      setState((prev) => ({ ...prev, formData: { ...prev.formData, telefono: formatted } }));
+      setState((prev) => ({
+        ...prev,
+        formData: { ...prev.formData, telefono: formatted },
+        submitError: '',
+        submitSuccess: false
+      }));
       validateField('telefono', formatted);
     }
   };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
-    setState((prev) => ({ ...prev, formData: { ...prev.formData, correo: val } }));
+    setState((prev) => ({
+      ...prev,
+      formData: { ...prev.formData, correo: val },
+      submitError: '',
+      submitSuccess: false
+    }));
     validateField('correo', val);
   };
 
@@ -192,7 +250,15 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ setAuthMode, onShowC
         <RegisterStep1
           loading={state.loading}
           curpInput={state.curpInput}
-          onCurpChange={(value) => setState((prev) => ({ ...prev, curpInput: value }))}
+          onCurpChange={(value) =>
+            setState((prev) => ({
+              ...prev,
+              curpInput: normalizeCurp(value),
+              submitError: '',
+              submitSuccess: false,
+              formData: { ...prev.formData, curpData: null, edadCalculada: null }
+            }))
+          }
           onValidate={triggerCurpSearch}
         />
       )}
@@ -214,16 +280,36 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ setAuthMode, onShowC
           onPhoneChange={handlePhoneChange}
           onEmailChange={handleEmailChange}
           onPasswordChange={(e) => {
-            setState((prev) => ({ ...prev, formData: { ...prev.formData, contrasena: e.target.value } }));
+            setState((prev) => ({
+              ...prev,
+              formData: { ...prev.formData, contrasena: e.target.value },
+              submitError: '',
+              submitSuccess: false
+            }));
             validateField('contrasena', e.target.value);
           }}
           onConfirmPasswordChange={(e) => {
-            setState((prev) => ({ ...prev, formData: { ...prev.formData, confirmarContrasena: e.target.value } }));
+            setState((prev) => ({
+              ...prev,
+              formData: { ...prev.formData, confirmarContrasena: e.target.value },
+              submitError: '',
+              submitSuccess: false
+            }));
             validateField('confirmarContrasena', e.target.value, state.formData.contrasena);
           }}
           // Solo llamamos a handleFinalRegister
           onSubmit={handleFinalRegister}
         />
+      )}
+      {state.submitError && (
+        <p className="mt-2 text-[10px] text-red-600 dark:text-red-400 text-center font-medium">
+          {state.submitError}
+        </p>
+      )}
+      {state.submitSuccess && (
+        <p className="mt-2 text-[10px] text-green-600 dark:text-green-400 text-center font-medium">
+          Registro completado correctamente
+        </p>
       )}
     </div>
   );

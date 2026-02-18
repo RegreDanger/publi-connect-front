@@ -79,8 +79,7 @@ export default function App() {
           <div className="liquid-glass rounded-2xl overflow-hidden w-full">
             <div className="p-5">
               {authMode === 'login' ? (
-                // Nota: Podrías agregar onLoginSuccess aquí también si modificas LoginForm
-                <LoginForm setAuthMode={setAuthMode} />
+                <LoginForm setAuthMode={setAuthMode} onLoginSuccess={handleLoginSuccess} />
               ) : (
                 <RegisterForm 
                   setAuthMode={setAuthMode} 

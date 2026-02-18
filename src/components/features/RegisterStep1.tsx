@@ -26,7 +26,7 @@ export const RegisterStep1: React.FC<RegisterStep1Props> = ({
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => onCurpChange(e.target.value.toUpperCase())}
         isValid={curpInput.length === 18}
       />
-      <Button disabled={loading || curpInput.length < 18} onClick={onValidate}>
+      <Button disabled={loading || curpInput.length < 18} type="submit">
         {loading ? <Loader2 className="animate-spin" /> : 'Validar CURP'}
       </Button>
 
