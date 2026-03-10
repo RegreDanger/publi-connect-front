@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Mail, Lock, Loader2, Apple } from 'lucide-react';
-import { Button, Input, SocialButton } from '@/components/ui';
+import { Mail, Lock, Loader2 } from 'lucide-react';
+import { Button, Input } from '@/components/ui';
 import { ApiError, isValidEmail, loginAccount } from '@/utils';
 import type { AuthMode } from '@/types/auth';
 
@@ -125,6 +125,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ setAuthMode, onLoginSucces
         </Button>
       </form>
 
+      {/*
       <div className="relative my-2">
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t border-gray-200 dark:border-white/10"></span>
@@ -141,6 +142,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ setAuthMode, onLoginSucces
         <SocialButton icon={Apple} />
         <SocialButton icon={Apple} />
       </div>
+      */}
 
       <p className="text-center text-[10px] text-gray-500 mt-2">
         ¿No tienes cuenta?{' '}

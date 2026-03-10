@@ -1,6 +1,6 @@
 import React from 'react';
-import { Fingerprint, Apple, Loader2 } from 'lucide-react';
-import { Button, Input, SocialButton } from '@/components/ui';
+import { Fingerprint, Loader2 } from 'lucide-react';
+import { Button, Input } from '@/components/ui';
 
 export interface RegisterStep1Props {
   loading: boolean;
@@ -30,6 +30,7 @@ export const RegisterStep1: React.FC<RegisterStep1Props> = ({
         {loading ? <Loader2 className="animate-spin" /> : 'Validar CURP'}
       </Button>
 
+      {/*
       <div className="relative my-3">
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t border-gray-200 dark:border-white/10"></span>
@@ -43,6 +44,7 @@ export const RegisterStep1: React.FC<RegisterStep1Props> = ({
         <SocialButton icon={Apple} />
         <SocialButton icon={Apple} />
       </div>
+      */}
     </form>
   );
 };

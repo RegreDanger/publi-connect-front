@@ -130,6 +130,34 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ setAuthMode, onShowC
     if (validateStep2()) setState((prev) => ({ ...prev, step: 3 }));
   };
 
+  const handleCurpFieldChange = (
+    field: 'nombres' | 'apellidoPaterno' | 'apellidoMaterno' | 'genero',
+    value: string
+  ) => {
+    setState((prev) => {
+      if (!prev.formData.curpData) return prev;
+      return {
+        ...prev,
+        formData: {
+          ...prev.formData,
+          curpData: { ...prev.formData.curpData, [field]: value }
+        },
+        submitError: '',
+        submitSuccess: false
+      };
+    });
+  };
+
+  const handleAgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value.replaceAll(/\D/g, '').slice(0, 3);
+    setState((prev) => ({
+      ...prev,
+      formData: { ...prev.formData, edadCalculada: val ? Number(val) : null },
+      submitError: '',
+      submitSuccess: false
+    }));
+  };
+
   const handleFinalRegister = (e: React.FormEvent) => {
     e.preventDefault();
     if (validateStep3()) {
@@ -268,6 +296,8 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ setAuthMode, onShowC
           formData={state.formData}
           errors={state.errors}
           onCodigoPostalChange={handleCPChange}
+          onCurpFieldChange={handleCurpFieldChange}
+          onAgeChange={handleAgeChange}
           onSubmit={handlePersonalData}
         />
       )}
