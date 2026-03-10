@@ -10,6 +10,7 @@ import { LoginForm, RegisterForm } from '@/components/features';
 import { ThemeToggle, BackgroundBlobs, ConfirmDataModal } from '@/components/layout';
 import { Dashboard } from '@/components/demo'; // <--- 1. Importar Dashboard
 import { injectGlobalStyles } from '@/styles';
+import logo from '@/assets/publi-connect-logo.png';
 import type { AuthMode, ModalData } from '@/types/auth';
 
 // Inyectar estilos globales
@@ -69,8 +70,12 @@ export default function App() {
       <div className="w-full max-w-sm flex flex-col h-full">
         {/* Logo Section */}
         <div className="flex-none mb-4 w-full">
-          <div className="bg-linear-to-r from-blue-600 to-indigo-600 w-full h-16 rounded-2xl shadow-xl shadow-blue-500/20 ring-4 ring-white/20 backdrop-blur-md flex items-center justify-center transform transition-transform hover:scale-105">
-            <span className="text-white font-bold tracking-[0.2em] text-lg">LOGO</span>
+          <div className="w-full h-16 transform transition-transform hover:scale-105">
+            <img
+              src={logo}
+              alt="Publi Connect Logo"
+              className="w-auto object-contain"
+            />
           </div>
         </div>
 
